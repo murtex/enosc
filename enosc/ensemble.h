@@ -39,11 +39,11 @@ namespace enosc
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
-			unsigned int getSize() { return _size; }
-			unsigned int getDim() { return _dim; }
+			unsigned int get_size() { return _size; }
+			unsigned int get_dim() { return _dim; }
 
-			enosc::host_vector const & getEpsilons() { return _epsilons; }
-			enosc::host_vector const & getBetas() { return _betas; }
+			enosc::host_vector const & get_epsilons() { return _epsilons; }
+			enosc::host_vector const & get_betas() { return _betas; }
 
 			/* phase space */
 		protected:
