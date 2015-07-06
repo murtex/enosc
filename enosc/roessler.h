@@ -38,7 +38,7 @@ namespace enosc
 			/* phase space */
 		public:
 
-			virtual void init( unsigned int seed );
+			virtual void init( unsigned int seed, bool det, bool stoch );
 
 	};
 

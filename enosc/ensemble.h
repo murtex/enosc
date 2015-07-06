@@ -50,11 +50,14 @@ namespace enosc
 
 			enosc::device_vector _state; /* phase state */
 
+			enosc::device_vector _deriv_det; /* vector field */
+			enosc::device_vector _deriv_stoch;
+
 		public:
 
-			virtual enosc::device_vector & get_state() { return _state; }
+			virtual enosc::device_vector const & get_state() { return _state; }
 
-			virtual void init( unsigned int seed );
+			virtual void init( unsigned int seed, bool det = true, bool stoch = true );
 
 	};
 
