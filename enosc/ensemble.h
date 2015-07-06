@@ -62,8 +62,6 @@ namespace enosc
 			enosc::device_vector _deriv_det; /* derivatives */
 			enosc::device_vector _deriv_stoch;
 
-			enosc::device_vector _meanfield; /* meanfield */
-
 		public:
 
 			enosc::device_vector const & compute_deriv( enosc::device_vector const & state, enosc::scalar time );

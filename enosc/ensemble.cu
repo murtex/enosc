@@ -93,9 +93,6 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 	if ( stoch )
 		_deriv_stoch.resize( _state.size() );
 
-		/* prepare computation buffers */
-	_meanfield.resize( _dim * _epsilons.size() * _betas.size() ); /* meanfield */
-
 		/* initialize randomness */
 	srand( seed );
 
