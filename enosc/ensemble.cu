@@ -86,12 +86,15 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
 
 		/* prepare phase space buffers */
-	_state.resize( _dim * _size * _epsilons.size() * _betas.size() );
+	_state.resize( _dim * _size * _epsilons.size() * _betas.size() ); /* phase state */
 
-	if ( det )
+	if ( det ) /* derivatives */
 		_deriv_det.resize( _state.size() );
 	if ( stoch )
 		_deriv_stoch.resize( _state.size() );
+
+		/* prepare computation buffers */
+	_meanfield.resize( _dim * _epsilons.size() * _betas.size() ); /* meanfield */
 
 		/* initialize randomness */
 	srand( seed );
