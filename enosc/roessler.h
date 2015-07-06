@@ -40,6 +40,9 @@ namespace enosc
 
 			virtual void init( unsigned int seed, bool det, bool stoch );
 
+			virtual enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time );
+			virtual enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) { return _deriv_stoch; }
+
 	};
 
 }

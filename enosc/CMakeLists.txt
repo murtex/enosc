@@ -4,7 +4,6 @@ cuda_add_library( enosc
 
 	ensemble.cu
 	roessler.cu
-	roessler_mod.cu
 	
 	stepper.cu
 	euler.cu

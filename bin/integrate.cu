@@ -14,7 +14,6 @@
 #include <xis/factory.h>
 #include <enosc/ensemble.h>
 #include <enosc/roessler.h>
-#include <enosc/roessler_mod.h>
 
 #include <enosc/observer.h>
 #include <enosc/hdf5.h>
@@ -88,7 +87,6 @@ void init()
 	xis::Factory< enosc::Ensemble > fac_ensemble; /* registration */
 
 	fac_ensemble.enroll< enosc::Roessler >( "roessler" );
-	fac_ensemble.enroll< enosc::RoesslerMod >( "roessler_mod" );
 
 	std::string ensemble = _config.lookup( "ensemble/type" ); /* creation */
 	_logger.tab() << "create ensemble (" << ensemble << ")...\n";

@@ -92,5 +92,15 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 		/* initialize randomness */
 	srand( seed );
 
+		/* logging */
+	size_t cuda_free;
+	size_t cuda_total;
+
+	cudaMemGetInfo( &cuda_free, &cuda_total );
+
+	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
+
+	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
+
 }
 
