@@ -43,7 +43,7 @@ namespace enosc
 			/* integration */
 		public:
 
-			virtual void integrate( enosc::Ensemble & ensemble, unsigned int step ) = 0;
+			virtual void integrate( enosc::Ensemble & ensemble, enosc::scalar time ) = 0;
 
 	};
 

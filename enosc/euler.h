@@ -32,7 +32,7 @@ namespace enosc
 			/* integration */
 		public:
 
-			void integrate( enosc::Ensemble & ensemble, unsigned int step );
+			void integrate( enosc::Ensemble & ensemble, enosc::scalar time );
 
 	};
 

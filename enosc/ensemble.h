@@ -50,12 +50,12 @@ namespace enosc
 
 			enosc::device_vector _state; /* state */
 
-			enosc::device_vector _deriv_det;
+			enosc::device_vector _deriv_det; /* derivatives */
 			enosc::device_vector _deriv_stoch;
 
 		public:
 
-			enosc::device_vector const & get_state() { return _state; }
+			enosc::device_vector & get_state() { return _state; }
 
 			virtual void init( unsigned int seed, bool det = true, bool stoch = true );
 

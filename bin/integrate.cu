@@ -141,7 +141,7 @@ void run()
 		for ( unsigned int i = 0; i < steps; ++i ) {
 			_logger.progress( i, steps );
 
-			_stepper->integrate( *_ensemble, i );
+			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
 
 				/* DEBUG */
 			_logger.log() << _ensemble->get_state() << "\n";
