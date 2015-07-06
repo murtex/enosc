@@ -39,31 +39,22 @@ namespace enosc
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
-			unsigned int get_size() { return _size; }
-			unsigned int get_dim() { return _dim; }
+			virtual unsigned int get_size() { return _size; }
+			virtual unsigned int get_dim() { return _dim; }
 
-			enosc::host_vector const & get_epsilons() { return _epsilons; }
-			enosc::host_vector const & get_betas() { return _betas; }
+			virtual enosc::host_vector const & get_epsilons() { return _epsilons; }
+			virtual enosc::host_vector const & get_betas() { return _betas; }
 
 			/* phase space */
 		protected:
 
-			enosc::device_vector _state;
-
-			enosc::device_vector _deriv_det;
-			enosc::device_vector _deriv_stoch;
+			enosc::device_vector _state; /* phase state */
 
 		public:
 
-			enosc::device_vector & get_state() { return _state; }
+			virtual enosc::device_vector & get_state() { return _state; }
 
-			enosc::device_vector const & get_deriv_det() { return _deriv_det; }
-			enosc::device_vector const & get_deriv_stoch() { return _deriv_stoch; }
-
-			virtual void init( unsigned int seed ) = 0;
-
-			virtual void evolve_det( enosc::scalar t ) = 0;
-			virtual void evolve_stoch( enosc::scalar t ) = 0;
+			virtual void init( unsigned int seed );
 
 	};
 

@@ -22,18 +22,18 @@ void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 {
 
 		/* evolution */
-	ensemble.evolve_det( _times[step] );
-	enosc::device_vector const & deriv = ensemble.get_deriv_det();
+	/*ensemble.evolve_det( _times[step] );
+	 *enosc::device_vector const & deriv = ensemble.get_deriv_det();*/
 
 		/* x + dt*dxdt */
-	enosc::device_vector & state = ensemble.get_state();
-
-	thrust::transform(
-		state.begin(), state.end(),
-		thrust::make_transform_iterator(
-			deriv.begin(), thrust::placeholders::_1 * _dt ),
-		state.begin(),
-		thrust::plus< enosc::scalar >() );
+/*    enosc::device_vector & state = ensemble.get_state();
+ *
+ *    thrust::transform(
+ *        state.begin(), state.end(),
+ *        thrust::make_transform_iterator(
+ *            deriv.begin(), thrust::placeholders::_1 * _dt ),
+ *        state.begin(),
+ *        thrust::plus< enosc::scalar >() );*/
 
 }
 

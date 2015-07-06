@@ -59,15 +59,10 @@ void enosc::Roessler::configure( libconfig::Config const & config, std::string c
 void enosc::Roessler::init( unsigned int seed )
 {
 
-		/* prepare buffers */
-	_state.resize( 3 * _size * _epsilons.size() * _betas.size() );
-
-	_deriv_det.resize( _state.size() );
-	_deriv_stoch.resize( 0 );
+		/* base call */
+	enosc::Ensemble::init( seed );
 
 		/* prepare random state */
-	srand( seed );
-
 	enosc::host_vector rs( _size );
 	enosc::host_vector phis( _size );
 	enosc::host_vector zs( _size );
@@ -118,9 +113,5 @@ void enosc::Roessler::init( unsigned int seed )
 
 	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
 
-}
-
-void enosc::Roessler::evolve_det( enosc::scalar t )
-{
 }
 

@@ -38,10 +38,7 @@ namespace enosc
 			/* phase space */
 		public:
 
-			void init( unsigned int seed );
-
-			virtual void evolve_det( enosc::scalar t );
-			virtual void evolve_stoch( enosc::scalar t ) {}
+			virtual void init( unsigned int seed );
 
 	};
 

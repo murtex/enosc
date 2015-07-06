@@ -77,3 +77,15 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 
 }
 
+	/* phase space */
+void enosc::Ensemble::init( unsigned int seed )
+{
+
+		/* prepare phase space buffers */
+	_state.resize( 3 * _size * _epsilons.size() * _betas.size() );
+
+		/* initialize randomness */
+	srand( seed );
+
+}
+
