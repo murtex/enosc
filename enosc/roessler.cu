@@ -105,6 +105,7 @@ void enosc::Roessler::init( unsigned int seed, bool det, bool stoch )
 
 }
 
+	/* computation */
 enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, enosc::scalar time )
 {
 

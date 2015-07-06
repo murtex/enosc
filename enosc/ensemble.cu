@@ -81,6 +81,10 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 {
 
+		/* safeguard */
+	if ( !det && !stoch )
+		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
+
 		/* prepare phase space buffers */
 	_state.resize( _dim * _size * _epsilons.size() * _betas.size() );
 
@@ -102,5 +106,29 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 
 	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
 
+}
+
+	/* computation */
+enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vector const & state, enosc::scalar time )
+{
+
+		/* return pure deterministic/stochastic derivative */
+	if ( _deriv_det.size() == 0 )
+		return compute_deriv_stoch( state, time );
+
+	else if ( _deriv_stoch.size() == 0 )
+		return compute_deriv_det( state, time );
+
+		/* return overall derivative */
+	enosc::device_vector const & deriv_det = compute_deriv_det( state, time );
+	enosc::device_vector const & deriv_stoch = compute_deriv_stoch( state, time );
+
+	thrust::transform(
+		deriv_det.begin(), deriv_det.end(),
+		deriv_stoch.begin(),
+		_deriv_det.begin(),
+		thrust::plus< enosc::scalar >() );
+
+	return _deriv_det;
 }
 

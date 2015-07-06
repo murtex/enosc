@@ -22,7 +22,7 @@ namespace enosc
 		public:
 
 			Roessler();
-			virtual ~Roessler() {}
+			~Roessler() {}
 
 			/* configuration */
 		protected:
@@ -33,15 +33,18 @@ namespace enosc
 
 		public:
 
-			virtual void configure( libconfig::Config const & config, std::string const & groupname );
+			void configure( libconfig::Config const & config, std::string const & groupname );
 
 			/* phase space */
 		public:
 
-			virtual void init( unsigned int seed, bool det, bool stoch );
+			void init( unsigned int seed, bool det, bool stoch );
 
-			virtual enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time );
-			virtual enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) { return _deriv_stoch; }
+			/* computation */
+		public:
+
+			enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time );
+			enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) { return _deriv_stoch; }
 
 	};
 

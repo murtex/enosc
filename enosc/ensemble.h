@@ -48,22 +48,21 @@ namespace enosc
 			/* phase space */
 		protected:
 
-			enosc::device_vector _state; /* phase state */
+			enosc::device_vector _state; /* state */
 
-			enosc::device_vector _deriv_det; /* vector field */
+			enosc::device_vector _deriv_det;
 			enosc::device_vector _deriv_stoch;
 
 		public:
 
 			enosc::device_vector const & get_state() { return _state; }
 
-			enosc::device_vector const & get_deriv_det() { return _deriv_det; }
-			enosc::device_vector const & get_deriv_stoch() { return _deriv_stoch; }
-
-		public:
-
 			virtual void init( unsigned int seed, bool det = true, bool stoch = true );
 
+			/* computation */
+		public:
+
+			virtual enosc::device_vector const & compute_deriv( enosc::device_vector const & state, enosc::scalar time );
 			virtual enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time ) = 0;
 			virtual enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) = 0;
 
