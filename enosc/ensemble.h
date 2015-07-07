@@ -41,11 +41,11 @@ namespace enosc
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
-			unsigned int get_size() { return _size; }
-			unsigned int get_dim() { return _dim; }
+			unsigned int get_size() const { return _size; }
+			unsigned int get_dim() const { return _dim; }
 
-			enosc::device_vector const & get_epsilons() { return _epsilons; }
-			enosc::device_vector const & get_betas() { return _betas; }
+			enosc::device_vector const & get_epsilons() const { return _epsilons; }
+			enosc::device_vector const & get_betas() const { return _betas; }
 
 			/* phase space */
 		protected:

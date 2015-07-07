@@ -37,8 +37,8 @@ namespace enosc
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
-			enosc::host_vector const & get_times() { return _times; }
-			enosc::scalar get_dt() { return _dt; }
+			enosc::host_vector const & get_times() const { return _times; }
+			enosc::scalar get_dt() const { return _dt; }
 
 			/* integration */
 		public:

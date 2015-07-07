@@ -36,9 +36,11 @@ namespace enosc
 
 			H5::H5File _file; /* dataset file */
 
+			H5::DataType _datatype; /* in/out datatype */
+
 		public:
 
-			void init( std::string const & filename );
+			void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
 			void observe( enosc::Ensemble & ensemble, enosc::scalar time );
 

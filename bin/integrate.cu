@@ -67,8 +67,8 @@ libconfig::Config & _config = xis::Singleton< libconfig::Config >::instance();
 xis::Logger & _logger = xis::Singleton< xis::Logger >::instance();
 
 enosc::Ensemble * _ensemble = NULL;
-enosc::Observer * _observer = NULL;
 enosc::Stepper * _stepper = NULL;
+enosc::Observer * _observer = NULL;
 
 void init()
 {
@@ -97,20 +97,6 @@ void init()
 
 	_logger.untab();
 
-		/* initialize observer */
-	xis::Factory< enosc::Observer > fac_observer; /* registration */
-
-	fac_observer.enroll< enosc::HDF5 >( "hdf5" );
-
-	std::string observer = _config.lookup( "observer/type" ); /* creation */
-	_logger.tab() << "create observer (" << observer << ")...\n";
-
-	_observer = fac_observer.create( observer );
-	_observer->configure( _config, "observer" );
-	_observer->init( _cl_output );
-
-	_logger.untab();
-
 		/* initialize stepper */
 	xis::Factory< enosc::Stepper > fac_stepper; /* registration */
 
@@ -121,6 +107,20 @@ void init()
 
 	_stepper = fac_stepper.create( stepper );
 	_stepper->configure( _config, "stepper" );
+
+	_logger.untab();
+
+		/* initialize observer */
+	xis::Factory< enosc::Observer > fac_observer; /* registration */
+
+	fac_observer.enroll< enosc::HDF5 >( "hdf5" );
+
+	std::string observer = _config.lookup( "observer/type" ); /* creation */
+	_logger.tab() << "create observer (" << observer << ")...\n";
+
+	_observer = fac_observer.create( observer );
+	_observer->configure( _config, "observer" );
+	_observer->init( *_ensemble, *_stepper, _cl_output );
 
 	_logger.untab();
 
@@ -143,7 +143,9 @@ void run()
 			_logger.progress( i, steps );
 
 			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
+
 			_observer->observe( *_ensemble, _stepper->get_times()[i] );
+
 		}
 
 	}

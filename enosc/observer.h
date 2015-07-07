@@ -12,6 +12,7 @@
 
 #include <enosc/types.h>
 #include <enosc/ensemble.h>
+#include <enosc/stepper.h>
 
 	/* interface */
 namespace enosc
@@ -28,6 +29,10 @@ namespace enosc
 			virtual ~Observer();
 
 			/* configuration */
+		protected:
+
+			std::vector< unsigned int > _oscillators; /* observables */
+
 		public:
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
@@ -35,7 +40,7 @@ namespace enosc
 			/* observation */
 		public:
 
-			virtual void init( std::string const & filename ) = 0;
+			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename ) = 0;
 
 			virtual void observe( enosc::Ensemble & ensemble, enosc::scalar time ) = 0;
 
