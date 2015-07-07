@@ -85,11 +85,11 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 	if ( !det && !stoch )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
 
-	if ( _dim < 2 || _size == 0 || _epsilons.size() == 0 || _betas.size() == 0 )
-		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size | _epsilons | _betas" );
+	if ( _dim < 2 || _epsilons.size() == 0 || _betas.size() == 0 || _size == 0 )
+		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _epsilons | _betas | _size" );
 
 		/* prepare buffers */
-	_state.resize( _dim * _size * _epsilons.size() * _betas.size() ); /* phase state */
+	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* phase state */
 
 	if ( det ) /* derivatives */
 		_deriv_det.resize( _state.size() );
@@ -118,7 +118,7 @@ enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vecto
 {
 
 		/* safeguard */
-	if ( state.size() > _dim * _size * _epsilons.size() * _betas.size() )
+	if ( state.size() > _dim * _epsilons.size() * _betas.size() * _size )
 		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_deriv, state" );
 
 		/* return pure deterministic/stochastic derivative */

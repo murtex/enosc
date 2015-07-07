@@ -66,14 +66,14 @@ namespace enosc
 			enosc::scalar const y = thrust::get< 1 >( t );
 			enosc::scalar const z = thrust::get< 2 >( t );
 
-            enosc::scalar const mx = thrust::get< 3 >( t ); /* meanfield input */
-			enosc::scalar const my = thrust::get< 4 >( t );
-
-            enosc::scalar const epsilon = thrust::get< 5 >( t ); /* coupling input */
-			enosc::scalar const beta = thrust::get< 6 >( t );
+            enosc::scalar const epsilon = thrust::get< 3 >( t ); /* coupling input */
+			enosc::scalar const beta = thrust::get< 4 >( t );
 
 			enosc::scalar const sinbeta = sin( beta * M_PI );
 			enosc::scalar const cosbeta = cos( beta * M_PI );
+
+            enosc::scalar const mx = thrust::get< 5 >( t ); /* meanfield input */
+			enosc::scalar const my = thrust::get< 6 >( t );
 
 			thrust::get< 7 >( t ) = -y - z + epsilon*(mx*cosbeta - my*sinbeta); /* derivative output */
 			thrust::get< 8 >( t ) = x + a*y + epsilon*(mx*sinbeta + my*cosbeta);

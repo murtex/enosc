@@ -134,6 +134,7 @@ void run()
 
 		/* integrate ensemble */
 	_logger.log() << _ensemble->get_state() << "\n";
+	/*_logger.log() << _ensemble->compute_mean( _ensemble->get_state() ) << "\n";*/
 
 	unsigned int steps = _stepper->get_times().size() - 1;
 
@@ -147,6 +148,7 @@ void run()
 
 				/* DEBUG */
 			_logger.log() << _ensemble->get_state() << "\n";
+			/*_logger.log() << _ensemble->compute_mean( _ensemble->get_state() ) << "\n";*/
 
 		}
 
