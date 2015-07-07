@@ -32,6 +32,13 @@ namespace enosc
 		protected:
 
 			std::vector< unsigned int > _oscillators; /* observables */
+			bool _meanfield;
+
+			bool _raw;
+			bool _raw_deriv;
+
+			bool _polar;
+			bool _polar_deriv;
 
 		public:
 

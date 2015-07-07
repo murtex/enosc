@@ -14,6 +14,16 @@
 	/* con/destruction */
 enosc::Observer::Observer()
 {
+
+		/* default configuration */
+	_meanfield = true;
+
+	_raw = true;
+	_raw_deriv = true;
+
+	_polar = true;
+	_polar_deriv = true;
+
 }
 
 enosc::Observer::~Observer()
@@ -34,10 +44,37 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 			_oscillators[i] = config.lookup( settingname )[i];
 	}
 
+	settingname = groupname + "/meanfield";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _meanfield );
+
+	settingname = groupname + "/raw";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _raw );
+
+	settingname = groupname + "/raw_deriv";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _raw_deriv );
+
+	settingname = groupname + "/polar";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _polar );
+
+	settingname = groupname + "/polar_deriv";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _polar_deriv );
+
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
 	logger.log() << "oscillators: " << _oscillators << "\n";
+	logger.log() << "meanfield: " << _meanfield << "\n";
+
+	logger.log() << "raw: " << _raw << "\n";
+	logger.log() << "raw_deriv: " << _raw_deriv << "\n";
+
+	logger.log() << "polar: " << _polar << "\n";
+	logger.log() << "polar_deriv: " << _polar_deriv << "\n";
 
 }
 
@@ -49,6 +86,7 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 	for ( std::vector< unsigned int >::iterator it = _oscillators.begin(); it != _oscillators.end(); ++it )
 		if ( (*it)-1 >= ensemble.get_size() )
 			throw std::runtime_error( "invalid value: enosc::Observer::init, _oscillators" );
+
 }
 
 

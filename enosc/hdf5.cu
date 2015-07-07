@@ -67,6 +67,22 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	dataset = _file.createDataSet( "times", _datatype, H5::DataSpace( 1, &dims ) );
 	dataset.write( stepper.get_times().data(), _datatype );
 
+		/* initialize dynamic datasets */
+	H5::Group group = _file.createGroup( "raw" );
+	hsize_t mdims[6] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _oscillators.size(), stepper.get_times().size()};
+	mdims[0] = _raw ? (_raw_deriv ? 2 : 1) : 0;
+	_raw_osc = group.createDataSet( "oscillators", _datatype, H5::DataSpace( 6, mdims ) );
+	mdims[4] = _meanfield ? 1 : 0;
+	_raw_mean = group.createDataSet( "meanfield", _datatype, H5::DataSpace( 6, mdims ) );
+
+	group = _file.createGroup( "polar" );
+	mdims[0] = _polar ? (_polar_deriv ? 2 : 1) : 0;
+	mdims[1] = 2;
+	mdims[4] = _oscillators.size();
+	_polar_osc = group.createDataSet( "oscillators", _datatype, H5::DataSpace( 6, mdims ) );
+	mdims[4] = _meanfield ? 1 : 0;
+	_polar_mean = group.createDataSet( "meanfield", _datatype, H5::DataSpace( 6, mdims ) );
+
 }
 
 void enosc::HDF5::observe( enosc::Ensemble & ensemble, enosc::scalar time )
