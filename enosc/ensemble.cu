@@ -85,13 +85,15 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 	if ( !det && !stoch )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
 
-		/* prepare phase space buffers */
+		/* prepare buffers */
 	_state.resize( _dim * _size * _epsilons.size() * _betas.size() ); /* phase state */
 
 	if ( det ) /* derivatives */
 		_deriv_det.resize( _state.size() );
 	if ( stoch )
 		_deriv_stoch.resize( _state.size() );
+
+	_mean.resize( _dim * _epsilons.size() * _betas.size() ); /* ensemble mean */
 
 		/* initialize randomness */
 	srand( seed );
@@ -112,6 +114,10 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vector const & state, enosc::scalar time )
 {
 
+		/* safeguard */
+	if ( state.size() > _dim * _size * _epsilons.size() * _betas.size() )
+		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_deriv, state" );
+
 		/* return pure deterministic/stochastic derivative */
 	if ( _deriv_det.size() == 0 )
 		return compute_deriv_stoch( state, time );
@@ -119,16 +125,41 @@ enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vecto
 	else if ( _deriv_stoch.size() == 0 )
 		return compute_deriv_det( state, time );
 
-		/* return overall derivative */
-	enosc::device_vector const & deriv_det = compute_deriv_det( state, time );
-	enosc::device_vector const & deriv_stoch = compute_deriv_stoch( state, time );
+		/* return composite derivative */
+	compute_deriv_det( state, time );
+	compute_deriv_stoch( state, time );
 
 	thrust::transform(
-		deriv_det.begin(), deriv_det.end(),
-		deriv_stoch.begin(),
-		_deriv_det.begin(),
+		_deriv_det.begin(), _deriv_det.end(), /* summands input */
+		_deriv_stoch.begin(),
+		_deriv_det.begin(), /* sum output */
 		thrust::plus< enosc::scalar >() );
 
 	return _deriv_det;
+}
+
+enosc::device_vector const & enosc::Ensemble::compute_mean( enosc::device_vector const & buf )
+{
+
+		/* safeguard */
+	if ( buf.size() / _size > _dim * _epsilons.size() * _betas.size() )
+		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_mean, buf" );
+
+		/* average ensemble */
+	thrust::reduce_by_key(
+
+		thrust::make_transform_iterator( /* keys */
+			thrust::counting_iterator< unsigned int >( 0 ),
+			thrust::placeholders::_1 / _size ),
+		thrust::make_transform_iterator(
+			thrust::counting_iterator< unsigned int >( 0 ),
+			thrust::placeholders::_1 / _size ) + buf.size(),
+
+		thrust::make_transform_iterator( /* scaled input */
+			buf.begin(), thrust::placeholders::_1 / _size ),
+
+		thrust::make_discard_iterator(), _mean.begin() ); /* keys, mean output */
+
+	return _mean;
 }
 

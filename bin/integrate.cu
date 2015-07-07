@@ -145,6 +145,7 @@ void run()
 
 				/* DEBUG */
 			_logger.log() << _ensemble->get_state() << "\n";
+			_logger.log() << _ensemble->compute_mean( _ensemble->get_state() ) << "\n";
 
 		}
 
