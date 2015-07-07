@@ -85,6 +85,9 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 	if ( !det && !stoch )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
 
+	if ( _dim < 2 || _size == 0 || _epsilons.size() == 0 || _betas.size() == 0 )
+		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size | _epsilons | _betas" );
+
 		/* prepare buffers */
 	_state.resize( _dim * _size * _epsilons.size() * _betas.size() ); /* phase state */
 

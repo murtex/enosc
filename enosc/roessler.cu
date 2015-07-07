@@ -99,7 +99,7 @@ void enosc::Roessler::init( unsigned int seed, bool det, bool stoch )
 
 			_state.begin(), /* cartesian output */
 			_state.begin() + _size * _epsilons.size() * _betas.size(),
-			_state.begin() + 2 * _size * _epsilons.size() * _betas.size() ) ),
+			_state.begin() + 2*_size * _epsilons.size() * _betas.size() ) ),
 
 		_size * _epsilons.size() * _betas.size(), enosc::CylinderToCartesian() );
 
@@ -108,6 +108,44 @@ void enosc::Roessler::init( unsigned int seed, bool det, bool stoch )
 	/* computation */
 enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, enosc::scalar time )
 {
+
+		/* compute ode */
+	compute_mean( _state );
+
+	thrust::for_each_n(
+		thrust::make_zip_iterator( thrust::make_tuple(
+
+			_state.begin(), /* state input */
+			_state.begin() + _size * _epsilons.size() * _betas.size(),
+			_state.begin() + 2*_size * _epsilons.size() * _betas.size(),
+
+            thrust::make_permutation_iterator( /* meanfield input */
+				_mean.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 % _size ) ),
+			thrust::make_permutation_iterator(
+				_mean.begin() + _epsilons.size() * _betas.size(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 % _size ) ),
+
+			thrust::make_permutation_iterator( /* coupling input */
+				_epsilons.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 / _size ) ),
+			thrust::make_permutation_iterator(
+				_betas.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+                    thrust::placeholders::_1 / _size ) ),
+
+			_deriv_det.begin(), /* derivative output */
+			_deriv_det.begin() + _size * _epsilons.size() * _betas.size(),
+			_deriv_det.begin() + 2*_size * _epsilons.size() * _betas.size() ) ),
+
+		_size * _epsilons.size() * _betas.size(), enosc::RoesslerODE( _a, _b, _c ) );
 
 	return _deriv_det;
 }
