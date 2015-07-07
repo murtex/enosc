@@ -76,6 +76,22 @@ namespace xis
 				return *this;
 			}
 
+			Logger & operator<<( bool const & v )
+			{
+
+					/* safeguard */
+				if ( _hierarchy_cur > _hierarchy_max )
+					return *this;
+
+					/* logging */
+				if ( v )
+					std::cout << "true";
+				else
+					std::cout << "false";
+
+				return *this;
+			}
+
 			template< typename T >
 			Logger & operator<<( std::vector< T > const & v )
 			{
