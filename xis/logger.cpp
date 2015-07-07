@@ -144,8 +144,10 @@ xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
 	if ( cur == 0 ) {
 		if ( max == 0 )
 			tab();
-		else
+		else {
 			log() << "0%..";
+			flush();
+		}
 
 		decile_prev = 0;
 	}
@@ -160,11 +162,14 @@ xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
 
 			*this << 10*(i+1) << "%";
 
-			if ( i < 9 )
+			if ( i+1 < 10 )
 				*this << "..";
 			else
 				*this << "\n";
 		}
+
+		if ( decile_prev < decile_cur )
+			flush();
 
 		decile_prev = decile_cur;
 

@@ -44,6 +44,11 @@ namespace xis
 
 			std::vector< std::clock_t > _clocks; /* hierarchy clocks */
 
+			/* buffering */
+		public:
+
+			void flush() { std::cout.flush(); }
+
 			/* logging */
 		private:
 
