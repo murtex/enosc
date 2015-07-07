@@ -156,8 +156,15 @@ xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
 			/* continue */
 		unsigned int decile_cur = max > 1 ? floor( 10 * cur / (double) (max-1) ) : 10;
 
-		for ( unsigned int i = decile_prev; i < decile_cur; ++i )
-			*this << 10*(i+1) << "%..";
+		for ( unsigned int i = decile_prev; i < decile_cur; ++i ) {
+
+			*this << 10*(i+1) << "%";
+
+			if ( i < 9 )
+				*this << "..";
+			else
+				*this << "\n";
+		}
 
 		decile_prev = decile_cur;
 
