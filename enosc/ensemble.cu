@@ -26,7 +26,11 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 {
 
 		/* parse group settings */
-	std::string settingname = groupname + "/size";
+	std::string settingname = groupname + "/seed";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _seed );
+
+	settingname = groupname + "/size";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _size );
 
@@ -69,6 +73,8 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
+	logger.log() << "seed: " << _seed << "\n";
+
 	logger.log() << "size: " << _size << "\n";
 	logger.log() << "dim: " << _dim << "\n";
 
@@ -78,15 +84,15 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 }
 
 	/* phase space */
-void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
+void enosc::Ensemble::init( bool det, bool stoch )
 {
 
 		/* safeguard */
 	if ( !det && !stoch )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
 
-	if ( _dim < 2 || _epsilons.size() == 0 || _betas.size() == 0 || _size == 0 )
-		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _epsilons | _betas | _size" );
+	if ( _dim < 2 || _size == 0 )
+		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size" );
 
 		/* prepare buffers */
 	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* phase state */
@@ -99,7 +105,7 @@ void enosc::Ensemble::init( unsigned int seed, bool det, bool stoch )
 	_mean.resize( _dim * _epsilons.size() * _betas.size() ); /* ensemble mean */
 
 		/* initialize randomness */
-	srand( seed );
+	srand( _seed );
 
 		/* logging */
 	size_t cuda_free;

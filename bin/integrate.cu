@@ -93,7 +93,7 @@ void init()
 
 	_ensemble = fac_ensemble.create( ensemble );
 	_ensemble->configure( _config, "ensemble" );
-	_ensemble->init( _config.lookup( "ensemble/seed" ) );
+	_ensemble->init();
 
 	_logger.untab();
 
@@ -107,6 +107,7 @@ void init()
 
 	_observer = fac_observer.create( observer );
 	_observer->configure( _config, "observer" );
+	_observer->init( _cl_output );
 
 	_logger.untab();
 
@@ -133,23 +134,16 @@ void run()
 {
 
 		/* integrate ensemble */
-	_logger.log() << _ensemble->get_state() << "\n";
-	/*_logger.log() << _ensemble->compute_mean( _ensemble->get_state() ) << "\n";*/
-
 	unsigned int steps = _stepper->get_times().size() - 1;
 
 	if ( steps > 0 ) {
 
-		/*_logger.progress() << "integrate ensemble...\n";*/
+		_logger.progress() << "integrate ensemble...\n";
 		for ( unsigned int i = 0; i < steps; ++i ) {
-			/*_logger.progress( i, steps );*/
+			_logger.progress( i, steps );
 
 			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
-
-				/* DEBUG */
-			_logger.log() << _ensemble->get_state() << "\n";
-			/*_logger.log() << _ensemble->compute_mean( _ensemble->get_state() ) << "\n";*/
-
+			_observer->observe( *_ensemble, _stepper->get_times()[i] );
 		}
 
 	}

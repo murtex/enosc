@@ -21,8 +21,21 @@ enosc::HDF5::~HDF5()
 void enosc::HDF5::configure( libconfig::Config const & config, std::string const & groupname )
 {
 
-		/* base call/settings */
+		/* base call */
 	enosc::Observer::configure( config, groupname );
 
+}
+
+	/* observation */
+void enosc::HDF5::init( std::string const & filename )
+{
+
+		/* create dataset file */
+	_file = H5::H5File( filename.c_str(), H5F_ACC_TRUNC );
+
+}
+
+void enosc::HDF5::observe( enosc::Ensemble & ensemble, enosc::scalar time )
+{
 }
 

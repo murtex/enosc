@@ -29,6 +29,8 @@ namespace enosc
 			/* configuration */
 		protected:
 
+			unsigned int _seed; /* randomization seed */
+
 			unsigned int _size; /* ensemble size */
 			unsigned int _dim; /* dimensionality */
 
@@ -54,7 +56,7 @@ namespace enosc
 
 			enosc::device_vector & get_state() { return _state; }
 
-			virtual void init( unsigned int seed, bool det = true, bool stoch = true );
+			virtual void init( bool det = true, bool stoch = true );
 
 			/* computation */
 		protected:

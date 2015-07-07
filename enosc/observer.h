@@ -11,6 +11,7 @@
 #include <xis/config.h>
 
 #include <enosc/types.h>
+#include <enosc/ensemble.h>
 
 	/* interface */
 namespace enosc
@@ -30,6 +31,13 @@ namespace enosc
 		public:
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
+
+			/* observation */
+		public:
+
+			virtual void init( std::string const & filename ) = 0;
+
+			virtual void observe( enosc::Ensemble & ensemble, enosc::scalar time ) = 0;
 
 	};
 

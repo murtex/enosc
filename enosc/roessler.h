@@ -38,7 +38,7 @@ namespace enosc
 			/* phase space */
 		public:
 
-			void init( unsigned int seed, bool det, bool stoch );
+			void init( bool det, bool stoch );
 
 			/* computation */
 		public:

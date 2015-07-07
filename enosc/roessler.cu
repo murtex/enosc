@@ -56,11 +56,11 @@ void enosc::Roessler::configure( libconfig::Config const & config, std::string c
 }
 
 	/* phase space */
-void enosc::Roessler::init( unsigned int seed, bool det, bool stoch )
+void enosc::Roessler::init( bool det, bool stoch )
 {
 
 		/* base call */
-	enosc::Ensemble::init( seed, true, false );
+	enosc::Ensemble::init( true, false );
 
 		/* prepare random state */
 	enosc::host_vector rs( _size );

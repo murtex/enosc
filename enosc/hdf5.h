@@ -10,6 +10,8 @@
 	/* includes */
 #include <enosc/observer.h>
 
+#include <H5Cpp.h>
+
 	/* interface */
 namespace enosc
 {
@@ -28,6 +30,17 @@ namespace enosc
 		public:
 
 			void configure( libconfig::Config const & config, std::string const & groupname );
+
+			/* observation */
+		private:
+
+			H5::H5File _file; /* dataset file */
+
+		public:
+
+			void init( std::string const & filename );
+
+			void observe( enosc::Ensemble & ensemble, enosc::scalar time );
 
 	};
 
