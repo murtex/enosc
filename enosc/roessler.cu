@@ -109,15 +109,19 @@ void enosc::Roessler::init( unsigned int seed, bool det, bool stoch )
 enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, enosc::scalar time )
 {
 
+		/* safeguard */
+	if ( state.size() != _state.size() )
+		throw std::runtime_error( "invalid value: enosc::Roessler::compute_deriv_det, state" );
+
 		/* compute ode */
-	compute_mean( _state );
+	compute_mean( state );
 
 	thrust::for_each_n(
 		thrust::make_zip_iterator( thrust::make_tuple(
 
-			_state.begin(), /* state input */
-			_state.begin() + _epsilons.size() * _betas.size() * _size,
-			_state.begin() + _epsilons.size() * _betas.size() * 2*_size,
+			state.begin(), /* state input */
+			state.begin() + _epsilons.size() * _betas.size() * _size,
+			state.begin() + _epsilons.size() * _betas.size() * 2*_size,
 
 			thrust::make_permutation_iterator( /* coupling input */
 				_epsilons.begin(),

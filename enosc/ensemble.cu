@@ -118,7 +118,7 @@ enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vecto
 {
 
 		/* safeguard */
-	if ( state.size() > _dim * _epsilons.size() * _betas.size() * _size )
+	if ( state.size() != _state.size() )
 		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_deriv, state" );
 
 		/* return pure deterministic/stochastic derivative */
@@ -145,7 +145,7 @@ enosc::device_vector const & enosc::Ensemble::compute_mean( enosc::device_vector
 {
 
 		/* safeguard */
-	if ( buf.size() / _size > _dim * _epsilons.size() * _betas.size() )
+	if ( buf.size() != _state.size() )
 		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_mean, buf" );
 
 		/* average ensemble */
