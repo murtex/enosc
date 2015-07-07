@@ -32,6 +32,9 @@ void enosc::HDF5::configure( libconfig::Config const & config, std::string const
 void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename )
 {
 
+		/* base call */
+	enosc::Observer::init( ensemble, stepper, filename );
+
 		/* create file */
 	_file = H5::H5File( filename.c_str(), H5F_ACC_TRUNC );
 
@@ -45,7 +48,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 
 		/* create static datasets */
 	H5::DataSet dataset = _file.createDataSet( "size", _datatype, H5::DataSpace() );
-	unsigned int size = ensemble.get_size();
+	unsigned int size = _oscillators.size();
 	dataset.write( &size, H5::PredType::NATIVE_UINT );
 
 	dataset = _file.createDataSet( "dim", _datatype, H5::DataSpace() );

@@ -40,7 +40,7 @@ namespace enosc
 			/* observation */
 		public:
 
-			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename ) = 0;
+			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
 			virtual void observe( enosc::Ensemble & ensemble, enosc::scalar time ) = 0;
 
