@@ -47,16 +47,8 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 		throw std::runtime_error( "invalid type: enosc::HDF5::init, enosc::scalar" );
 
 		/* create static datasets */
-	H5::DataSet dataset = _file.createDataSet( "size", _datatype, H5::DataSpace() );
-	unsigned int size = _oscillators.size();
-	dataset.write( &size, H5::PredType::NATIVE_UINT );
-
-	dataset = _file.createDataSet( "dim", _datatype, H5::DataSpace() );
-	unsigned int dim = ensemble.get_dim();
-	dataset.write( &dim, H5::PredType::NATIVE_UINT );
-
 	hsize_t dims = ensemble.get_epsilons().size();
-	dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dims ) );
+	H5::DataSet dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dims ) );
 	dataset.write( enosc::host_vector( ensemble.get_epsilons() ).data(), _datatype );
 
 	dims = ensemble.get_betas().size();
