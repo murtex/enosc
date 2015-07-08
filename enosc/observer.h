@@ -49,7 +49,7 @@ namespace enosc
 
 			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
-			virtual void observe( enosc::Ensemble & ensemble, enosc::scalar time ) = 0;
+			virtual void observe( enosc::Ensemble & ensemble, unsigned int step ) = 0;
 
 	};
 

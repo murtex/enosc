@@ -77,7 +77,43 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 
 }
 
-void enosc::HDF5::observe( enosc::Ensemble & ensemble, enosc::scalar time )
+void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step )
 {
+
+		/* write raw */
+	if ( _raw ) {
+
+			/* state */
+		hsize_t dims_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), ensemble.get_size()};
+		H5::DataSpace dataspace_in( 4, dims_in );
+		hsize_t starts_in[4] = {0, 0, 0, 0};
+		hsize_t counts_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _oscillators.size()};
+		dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
+
+		H5::DataSpace dataspace_out( _raw_osc.getSpace() );
+		hsize_t starts_out[6] = {0, 0, 0, 0, 0, step};
+		hsize_t counts_out[6] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _oscillators.size(), 1};
+		dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
+
+		_raw_osc.write( enosc::host_vector( ensemble.get_state() ).data(), _datatype, dataspace_in, dataspace_out );
+
+			/* meanfield */
+		if ( _meanfield ) {
+
+			dims_in[3] = 1;
+			dataspace_in = H5::DataSpace( 4, dims_in );
+			counts_in[3] = 1;
+			dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
+
+			dataspace_out = _raw_mean.getSpace();
+			counts_out[4] = 1;
+			dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
+
+			_raw_mean.write( enosc::host_vector( ensemble.compute_mean( ensemble.get_state() ) ).data(), _datatype, dataspace_in, dataspace_out );
+
+		}
+
+	}
+
 }
 
