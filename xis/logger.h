@@ -114,7 +114,7 @@ namespace xis
 					}
 
 					else {
-						std::cout << "..(" << n-_aggregate_max << ")";
+						std::cout << "..(" << v.size() << ")";
 						break;
 					}
 
