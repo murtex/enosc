@@ -206,7 +206,7 @@ xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
 			decile_prev = 1;
 		}
 
-			/* increasing deciles */
+			/* log increasing deciles */
 		unsigned int decile_cur = floor( 10.0 * cur / max ) + 1; /* [1..10] ~ [0%..90%]*/
 
 		if ( decile_prev != decile_cur ) {
