@@ -16,6 +16,8 @@ enosc::Observer::Observer()
 {
 
 		/* default configuration */
+	_transition = 0;
+
 	_size = 1;
 	_meanfield = true;
 
@@ -30,7 +32,11 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 {
 
 		/* parse group settings */
-	std::string settingname = groupname + "/size";
+	std::string settingname = groupname + "/transition_steps";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _transition );
+
+	settingname = groupname + "/size";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _size );
 
@@ -40,6 +46,8 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
+
+	logger.log() << "transition: " << _transition << "\n";
 
 	logger.log() << "size: " << _size << "\n";
 	logger.log() << "meanfield: " << _meanfield << "\n";
@@ -51,6 +59,9 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 {
 
 		/* safeguard */
+	if ( _transition > stepper.get_times().size()-1 )
+		throw std::runtime_error( "invalid value: enosc::Observer::init, _transition" );
+
 	if ( _size > ensemble.get_size() )
 		throw std::runtime_error( "invalid value: enosc::Observer::init, _size" );
 

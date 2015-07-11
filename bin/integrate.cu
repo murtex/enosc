@@ -133,21 +133,26 @@ void exit()
 void run()
 {
 
-		/* integrate ensemble */
-	_observer->observe( *_ensemble, 0, _stepper->get_times()[0] );
+		/* integrate and observe ensemble */
+	enosc::host_vector const & times = _stepper->get_times();
+	unsigned int steps = times.size() - 1;
 
-	unsigned int steps = _stepper->get_times().size() - 1;
-	if ( steps > 0 ) {
+	if ( steps == 0 ) /* initial state only */
+		_observer->observe( *_ensemble, 0, times[0] );
 
+	else { /* continuous integration */
 		_logger.progress( steps, steps ) << "integrate ensemble...\n";
 		for ( unsigned int i = 0; i < steps; ++i ) {
 			_logger.progress( i, steps );
 
-			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
-			_observer->observe( *_ensemble, i+1, _stepper->get_times()[i+1] );
-		}
+			if ( i == 0 ) /* initial state */
+				_observer->observe( *_ensemble, i, times[i] );
 
+			_stepper->integrate( *_ensemble, i ); /* integrated state */
+			_observer->observe( *_ensemble, i+1, times[i+1] );
+		}
 	}
+
 
 }
 

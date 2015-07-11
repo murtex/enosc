@@ -64,26 +64,21 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 		throw std::runtime_error( "invalid type: enosc::HDF5::init, enosc::scalar" );
 
 		/* create static datasets */
-	H5::DataSet dataset = _file.createDataSet( "size", _datatype, H5::DataSpace() );
-	dataset.write( &_size, H5::PredType::NATIVE_UINT );
-
-	dataset = _file.createDataSet( "dim", _datatype, H5::DataSpace() );
-	unsigned int dim = ensemble.get_dim();
-	dataset.write( &dim, H5::PredType::NATIVE_UINT );
-
-	hsize_t dims = ensemble.get_epsilons().size();
-	dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dims ) );
-	enosc::device_vector const & epsilons = ensemble.get_epsilons();
+	enosc::device_vector const & epsilons = ensemble.get_epsilons(); /* epsilons */
+	hsize_t dims = epsilons.size();
+	H5::DataSet dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dims ) );
 	dataset.write( enosc::host_vector( epsilons.begin(), epsilons.end() ).data(), _datatype );
 
-	dims = ensemble.get_betas().size();
+	enosc::device_vector const & betas = ensemble.get_betas(); /* betas */
+	dims = betas.size();
 	dataset = _file.createDataSet( "betas", _datatype, H5::DataSpace( 1, &dims ) );
-	enosc::device_vector const & betas = ensemble.get_betas();
 	dataset.write( enosc::host_vector( betas.begin(), betas.end() ).data(), _datatype );
 
-	dims = stepper.get_times().size();
+	enosc::host_vector const & ctimes = stepper.get_times(); /* times */
+	enosc::host_vector times( ctimes.begin() + _transition, ctimes.end() );
+	dims = times.size();
 	dataset = _file.createDataSet( "times", _datatype, H5::DataSpace( 1, &dims ) );
-	dataset.write( stepper.get_times().data(), _datatype );
+	dataset.write( times.data(), _datatype );
 
 		/* initialize dynamic datasets */
 	H5::Group group = _file.createGroup( "raw" );
@@ -96,7 +91,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 		props.setShuffle();
 	}
 
-	hsize_t mdims[5] = {stepper.get_times().size(), ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
+	hsize_t mdims[5] = {times.size(), ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
 	_raw_x = group.createDataSet( "x", _datatype, H5::DataSpace( 5, mdims ), props );
 	_raw_dxdt = group.createDataSet( "dxdt", _datatype, H5::DataSpace( 5, mdims ), props );
 
@@ -116,7 +111,11 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time )
 {
 
-		/* write oscillators */
+		/* skip transition phase */
+	if ( step < _transition )
+		return;
+
+		/* write raw oscillators */
 	hsize_t dims_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), ensemble.get_size()};
 	H5::DataSpace dataspace_in( 4, dims_in );
 	hsize_t starts_in[4] = {0, 0, 0, 0};
@@ -124,7 +123,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	H5::DataSpace dataspace_out( _raw_x.getSpace() );
-	hsize_t starts_out[5] = {step, 0, 0, 0, 0};
+	hsize_t starts_out[5] = {step - _transition, 0, 0, 0, 0};
 	hsize_t counts_out[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
@@ -134,7 +133,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
     enosc::device_vector const & deriv = ensemble.compute_deriv( state, time );
     _raw_dxdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* write meanfield */
+		/* write raw meanfield */
 	dims_in[3] = 1;
 	dataspace_in = H5::DataSpace( 4, dims_in );
 	counts_in[3] = _meanfield ? 1 : 0;
