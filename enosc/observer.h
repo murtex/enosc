@@ -31,14 +31,8 @@ namespace enosc
 			/* configuration */
 		protected:
 
-			std::vector< unsigned int > _oscillators; /* observables */
+			unsigned int _size; /* observables */
 			bool _meanfield;
-
-			bool _raw;
-			bool _raw_deriv;
-
-			bool _polar;
-			bool _polar_deriv;
 
 		public:
 
@@ -49,7 +43,7 @@ namespace enosc
 
 			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
-			virtual void observe( enosc::Ensemble & ensemble, unsigned int step ) = 0;
+			virtual void observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time ) = 0;
 
 	};
 

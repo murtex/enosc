@@ -27,6 +27,10 @@ namespace enosc
 			~HDF5();
 
 			/* configuration */
+		private:
+
+			unsigned int _deflate; /* compression */
+
 		public:
 
 			void configure( libconfig::Config const & config, std::string const & groupname );
@@ -38,16 +42,16 @@ namespace enosc
 
 			H5::DataType _datatype; /* in/out datatype */
 
-			H5::DataSet _raw_osc; /* dynamic datasets */
-			H5::DataSet _raw_mean;
-			H5::DataSet _polar_osc;
-			H5::DataSet _polar_mean;
+			H5::DataSet _raw_x; /* dynamic datasets */
+			H5::DataSet _raw_dxdt;
+			H5::DataSet _raw_mf;
+			H5::DataSet _raw_dmfdt;
 
 		public:
 
 			void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
-			void observe( enosc::Ensemble & ensemble, unsigned int step );
+			void observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time );
 
 	};
 

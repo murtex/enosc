@@ -94,10 +94,13 @@ void enosc::Ensemble::init( bool det, bool stoch )
 	if ( _dim < 2 || _size == 0 )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size" );
 
+	if ( _epsilons.size() == 0 || _betas.size() == 0 )
+		throw std::runtime_error( "invalid values: enosc::Enesemble::init, _epsilons | _betas" );
+
 		/* prepare buffers */
 	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* phase state */
 
-	if ( det ) /* derivatives */
+	if ( det ) /* state derivative */
 		_deriv_det.resize( _state.size() );
 	if ( stoch )
 		_deriv_stoch.resize( _state.size() );
@@ -128,20 +131,25 @@ enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vecto
 		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_deriv, state" );
 
 		/* return pure deterministic/stochastic derivative */
-	if ( _deriv_det.size() == 0 )
-		return compute_deriv_stoch( state, time );
-
-	else if ( _deriv_stoch.size() == 0 )
+	if ( _deriv_stoch.size() == 0 )
 		return compute_deriv_det( state, time );
+
+	else if ( _deriv_det.size() == 0 )
+		return compute_deriv_stoch( state, time );
 
 		/* return composite derivative */
 	compute_deriv_det( state, time );
 	compute_deriv_stoch( state, time );
 
 	thrust::transform(
-		_deriv_det.begin(), _deriv_det.end(), /* summands input */
-		_deriv_stoch.begin(),
+
+		_deriv_det.begin(), /* deterministic input */
+		_deriv_det.end(),
+
+		_deriv_stoch.begin(), /* stochastic input */
+
 		_deriv_det.begin(), /* sum output */
+
 		thrust::plus< enosc::scalar >() );
 
 	return _deriv_det;

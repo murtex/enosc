@@ -34,7 +34,7 @@ namespace enosc
 			unsigned int _size; /* ensemble size */
 			unsigned int _dim; /* dimensionality */
 
-			enosc::device_vector _epsilons; /* complex meanfield coupling */
+			enosc::device_vector _epsilons; /* coupling */
 			enosc::device_vector _betas;
 
 		public:
@@ -61,7 +61,7 @@ namespace enosc
 			/* computation */
 		protected:
 
-			enosc::device_vector _deriv_det; /* derivatives */
+			enosc::device_vector _deriv_det; /* state derivatives */
 			enosc::device_vector _deriv_stoch;
 
 			enosc::device_vector _mean; /* ensemble mean */

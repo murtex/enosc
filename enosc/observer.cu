@@ -16,13 +16,8 @@ enosc::Observer::Observer()
 {
 
 		/* default configuration */
+	_size = 1;
 	_meanfield = true;
-
-	_raw = true;
-	_raw_deriv = true;
-
-	_polar = true;
-	_polar_deriv = true;
 
 }
 
@@ -35,46 +30,19 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 {
 
 		/* parse group settings */
-	std::string settingname = groupname + "/oscillators";
-	if ( config.exists( settingname ) ) {
-		unsigned int n = config.lookup( settingname ).getLength();
-
-		_oscillators.resize( n );
-		for ( unsigned int i = 0; i < n; ++i )
-			_oscillators[i] = config.lookup( settingname )[i];
-	}
+	std::string settingname = groupname + "/size";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _size );
 
 	settingname = groupname + "/meanfield";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _meanfield );
 
-	settingname = groupname + "/raw";
-	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _raw );
-
-	settingname = groupname + "/raw_deriv";
-	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _raw_deriv );
-
-	settingname = groupname + "/polar";
-	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _polar );
-
-	settingname = groupname + "/polar_deriv";
-	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _polar_deriv );
-
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
-	logger.log() << "oscillators: " << _oscillators << "\n";
+	logger.log() << "size: " << _size << "\n";
 	logger.log() << "meanfield: " << _meanfield << "\n";
-
-	logger.log() << "raw: " << _raw << "\n";
-	logger.log() << "raw_deriv: " << _raw_deriv << "\n";
-
-	logger.log() << "polar: " << _polar << "\n";
-	logger.log() << "polar_deriv: " << _polar_deriv << "\n";
 
 }
 
@@ -83,9 +51,8 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 {
 
 		/* safeguard */
-	for ( std::vector< unsigned int >::iterator it = _oscillators.begin(); it != _oscillators.end(); ++it )
-		if ( (*it)-1 >= ensemble.get_size() )
-			throw std::runtime_error( "invalid value: enosc::Observer::init, _oscillators" );
+	if ( _size > ensemble.get_size() )
+		throw std::runtime_error( "invalid value: enosc::Observer::init, _size" );
 
 }
 
