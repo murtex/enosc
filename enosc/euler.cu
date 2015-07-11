@@ -18,12 +18,12 @@ void enosc::Euler::configure( libconfig::Config const & config, std::string cons
 }
 
 	/* integration */
-void enosc::Euler::integrate( enosc::Ensemble & ensemble, enosc::scalar time )
+void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 {
 
 		/* get state and derivative */
 	enosc::device_vector & state = ensemble.get_state();
-	enosc::device_vector const & deriv = ensemble.compute_deriv( state, time );
+	enosc::device_vector const & deriv = ensemble.compute_deriv( state, _times[step] );
 
 		/* evolve state (x + dt*dxdt) */
 	thrust::transform(
