@@ -134,21 +134,16 @@ void run()
 {
 
 		/* integrate ensemble */
-	_logger.log() << _ensemble->get_state() << "\n";
-
 	_observer->observe( *_ensemble, 0, _stepper->get_times()[0] );
 
 	unsigned int steps = _stepper->get_times().size() - 1;
 	if ( steps > 0 ) {
 
-		_logger.progress() << "integrate ensemble...\n";
+		_logger.progress( steps, steps ) << "integrate ensemble...\n";
 		for ( unsigned int i = 0; i < steps; ++i ) {
 			_logger.progress( i, steps );
 
 			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
-
-			_logger.log() << _ensemble->get_state() << "\n";
-
 			_observer->observe( *_ensemble, i+1, _stepper->get_times()[i+1] );
 		}
 
