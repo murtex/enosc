@@ -135,7 +135,7 @@ xis::Logger & xis::Logger::log()
 }
 
 	/* progression */
-xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
+xis::Logger & xis::Logger::progress2( unsigned int cur, unsigned int max )
 {
 
 		/* start progression */
@@ -176,6 +176,56 @@ xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
 			/* stop */
 		if ( cur == max-1 )
 			untab();
+
+	}
+
+	return *this;
+}
+
+xis::Logger & xis::Logger::progress( unsigned int cur, unsigned int max )
+{
+
+		/* start progression */
+	static unsigned int decile_prev;
+
+	if ( cur == max ) {
+		tab();
+		flush();
+
+		decile_prev = 0;
+	}
+
+		/* continue/stop progression */
+	else if ( cur < max ) {
+
+			/* always log initial decile */
+		if ( decile_prev == 0 ) {
+			log() << "0%..";
+			flush();
+
+			decile_prev = 1;
+		}
+
+			/* increasing deciles */
+		unsigned int decile_cur = floor( 10.0 * cur / max ) + 1; /* [1..10] ~ [0%..90%]*/
+
+		if ( decile_prev != decile_cur ) {
+			for ( unsigned int i = decile_prev; i < decile_cur; ++i )
+				*this << 10*i << "%..";
+			flush();
+
+			decile_prev = decile_cur;
+		}
+
+			/* stop logging */
+		if ( cur == max-1 ) {
+			for ( unsigned int i = decile_cur; i < 10; ++i )
+				*this << 10*i << "%..";
+
+			*this << "100%\n";
+			untab();
+			flush();
+		}
 
 	}
 

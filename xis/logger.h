@@ -128,7 +128,8 @@ namespace xis
 			/* progression */
 		public:
 
-			Logger & progress( unsigned int cur = 0, unsigned int max = 0 );
+			Logger & progress2( unsigned int cur, unsigned int max );
+			Logger & progress( unsigned int cur, unsigned int max );
 
 	};
 
