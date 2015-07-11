@@ -134,9 +134,9 @@ void run()
 {
 
 		/* integrate ensemble */
-	/*_logger.log() << _ensemble->get_state() << "\n";*/
+	_logger.log() << _ensemble->get_state() << "\n";
 
-	_observer->observe( *_ensemble, 0, 0 /* TODO */ );
+	_observer->observe( *_ensemble, 0, _stepper->get_times()[0] );
 
 	unsigned int steps = _stepper->get_times().size() - 1;
 	if ( steps > 0 ) {
@@ -147,9 +147,9 @@ void run()
 
 			_stepper->integrate( *_ensemble, _stepper->get_times()[i] );
 
-			/*_logger.log() << _ensemble->get_state() << "\n";*/
+			_logger.log() << _ensemble->get_state() << "\n";
 
-			_observer->observe( *_ensemble, i+1, 0 /* TODO */ );
+			_observer->observe( *_ensemble, i+1, _stepper->get_times()[i+1] );
 		}
 
 	}

@@ -9,7 +9,7 @@ set( CMAKE_BUILD_TYPE Release )
 include_directories( ${CMAKE_SOURCE_DIR} )
 
 #add_compile_options( "-std=c++11" )
-list( APPEND CMAKE_CXX_FLAGS "-Wall" ) # must set any cxx flag, separable cuda compilation gives error otherwise!
+list( APPEND CMAKE_CXX_FLAGS "-Wall -fopenmp" ) # must set any cxx flag, otherwise separable cuda compilation gives error!
 
 	# cuda
 find_package( CUDA REQUIRED )

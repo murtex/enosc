@@ -11,6 +11,11 @@
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 
+#include <thrust/system/cpp/vector.h>
+#include <thrust/system/omp/vector.h>
+#include <thrust/system/cuda/vector.h>
+#include <thrust/system/tbb/vector.h>
+
 #include <xis/logger.h>
 
 	/* interface */
@@ -20,7 +25,7 @@ namespace enosc
 	typedef float scalar;
 
 	typedef thrust::host_vector< scalar > host_vector;
-	typedef thrust::device_vector< scalar > device_vector;
+	typedef thrust::cuda::vector< scalar > device_vector;
 
 }
 

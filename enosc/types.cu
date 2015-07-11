@@ -23,8 +23,7 @@ xis::Logger & operator<<( xis::Logger & logger, enosc::device_vector const & v )
 {
 
 		/* convert to standard container */
-	enosc::host_vector hv( v );
-	std::vector< enosc::scalar > sv( hv.begin(), hv.end() );
+	std::vector< enosc::scalar > sv( v.begin(), v.end() );
 
 		/* logging */
 	return logger << sv;

@@ -1,4 +1,3 @@
 add_library( xis
-	config.cpp
-	logger.cpp )
+	config.cpp logger.cpp )
 

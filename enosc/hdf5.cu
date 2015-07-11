@@ -18,7 +18,7 @@ enosc::HDF5::HDF5()
 {
 
 		/* default configuration */
-	_deflate = 6;
+	_deflate = 0;
 
 }
 
@@ -73,11 +73,13 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 
 	hsize_t dims = ensemble.get_epsilons().size();
 	dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dims ) );
-	dataset.write( enosc::host_vector( ensemble.get_epsilons() ).data(), _datatype );
+	enosc::device_vector const & epsilons = ensemble.get_epsilons();
+	dataset.write( enosc::host_vector( epsilons.begin(), epsilons.end() ).data(), _datatype );
 
 	dims = ensemble.get_betas().size();
 	dataset = _file.createDataSet( "betas", _datatype, H5::DataSpace( 1, &dims ) );
-	dataset.write( enosc::host_vector( ensemble.get_betas() ).data(), _datatype );
+	enosc::device_vector const & betas = ensemble.get_betas();
+	dataset.write( enosc::host_vector( betas.begin(), betas.end() ).data(), _datatype );
 
 	dims = stepper.get_times().size();
 	dataset = _file.createDataSet( "times", _datatype, H5::DataSpace( 1, &dims ) );
@@ -87,19 +89,23 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	H5::Group group = _file.createGroup( "raw" );
 
 	H5::DSetCreatPropList props; /* oscillators */
-	/*hsize_t chunks[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
-	 *props.setChunk( 5, chunks );
-	 *props.setDeflate( _deflate );
-	 *props.setShuffle();*/
+	hsize_t chunks[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
+	if ( _deflate != 0 ) {
+		props.setChunk( 5, chunks );
+		props.setDeflate( _deflate );
+		props.setShuffle();
+	}
 
 	hsize_t mdims[5] = {stepper.get_times().size(), ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
 	_raw_x = group.createDataSet( "x", _datatype, H5::DataSpace( 5, mdims ), props );
 	_raw_dxdt = group.createDataSet( "dxdt", _datatype, H5::DataSpace( 5, mdims ), props );
 
-	/*chunks[4] = _meanfield ? 1 : 0; [> meanfield <]
-	 *props.setChunk( 5, chunks );
-	 *props.setDeflate( _deflate );
-	 *props.setShuffle();*/
+	chunks[4] = _meanfield ? 1 : 0; /* meanfield */
+	if ( _deflate != 0 ) {
+		props.setChunk( 5, chunks );
+		props.setDeflate( _deflate );
+		props.setShuffle();
+	}
 
 	mdims[4] = _meanfield ? 1 : 0;
 	_raw_mf = group.createDataSet( "mf", _datatype, H5::DataSpace( 5, mdims ), props );
@@ -122,10 +128,11 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	hsize_t counts_out[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-    enosc::device_vector const & deriv = ensemble.compute_deriv( ensemble.get_state(), time );
+	enosc::device_vector const & state = ensemble.get_state();
+	_raw_x.write( enosc::host_vector( state.begin(), state.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-	_raw_x.write( enosc::host_vector( ensemble.get_state() ).data(), _datatype, dataspace_in, dataspace_out );
-    _raw_dxdt.write( enosc::host_vector( deriv ).data(), _datatype, dataspace_in, dataspace_out );
+    enosc::device_vector const & deriv = ensemble.compute_deriv( state, time );
+    _raw_dxdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
 		/* write meanfield */
 	dims_in[3] = 1;
@@ -137,8 +144,11 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	counts_out[4] = _meanfield ? 1 : 0;
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	_raw_mf.write( enosc::host_vector( ensemble.compute_mean( ensemble.get_state() ) ).data(), _datatype, dataspace_in, dataspace_out );
-	_raw_dmfdt.write( enosc::host_vector( ensemble.compute_mean( deriv ) ).data(), _datatype, dataspace_in, dataspace_out );
+	enosc::device_vector const & mean = ensemble.compute_mean( state );
+	_raw_mf.write( enosc::host_vector( mean.begin(), mean.end() ).data(), _datatype, dataspace_in, dataspace_out );
+
+	enosc::device_vector const & meanderiv = ensemble.compute_mean( deriv );
+	_raw_dmfdt.write( enosc::host_vector( meanderiv.begin(), meanderiv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
 }
 
