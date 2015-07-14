@@ -46,11 +46,17 @@ namespace enosc
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
 			/* observation */
+		protected:
+
+			enosc::device_vector _funnel; /* funneling */
+
 		public:
 
 			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
 			virtual void observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time ) = 0;
+
+			void compute_funnel( enosc::device_vector const & polar_deriv );
 
 	};
 

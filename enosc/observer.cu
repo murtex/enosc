@@ -90,5 +90,27 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 	if ( _size > ensemble.get_size() )
 		throw std::runtime_error( "invalid value: enosc::Observer::init, _size" );
 
+		/* prepare buffers */
+	_funnel.resize( ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* funneling */
+
+		/* logging */
+	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
+
+	size_t cuda_free;
+	size_t cuda_total;
+	cudaMemGetInfo( &cuda_free, &cuda_total );
+	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
+
+}
+
+void enosc::Observer::compute_funnel( enosc::device_vector const & polar_deriv )
+{
+
+		/* safeguard */
+	if ( polar_deriv.size() % _funnel.size() != 0 )
+		throw std::runtime_error( "invalid argument: enosc::Observer::compute_funnel, polar_deriv" );
+
+		/* TODO: accumulate negative frequencies */
+
 }
 

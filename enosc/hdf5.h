@@ -54,6 +54,9 @@ namespace enosc
 			H5::DataSet _polar_mf;
 			H5::DataSet _polar_dmfdt;
 
+			H5::DataSet _funnel_mx;
+			H5::DataSet _funnel_mf;
+
 		public:
 
 			void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
