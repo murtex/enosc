@@ -54,9 +54,9 @@ namespace enosc
 
 			virtual void init( enosc::Ensemble const & ensemble, enosc::Stepper const & stepper, std::string const & filename );
 
-			virtual void observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time ) = 0;
+			void compute_funnel( enosc::device_vector const & polar_deriv, unsigned int size );
 
-			void compute_funnel( enosc::device_vector const & polar_deriv );
+			virtual void observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time ) = 0;
 
 	};
 

@@ -244,7 +244,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _funnel_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	compute_funnel( deriv );
+	compute_funnel( deriv, ensemble.get_size() );
 	_funnel_mx.write( enosc::host_vector( _funnel.begin(), _funnel.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
 		/* polar mean */
@@ -317,7 +317,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _funnel_mf.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	compute_funnel( deriv );
+	compute_funnel( deriv, 1 );
 	_funnel_mf.write( enosc::host_vector( _funnel.begin(), _funnel.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
 }

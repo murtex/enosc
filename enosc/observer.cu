@@ -103,7 +103,7 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 
 }
 
-void enosc::Observer::compute_funnel( enosc::device_vector const & polar_deriv )
+void enosc::Observer::compute_funnel( enosc::device_vector const & polar_deriv, unsigned int size )
 {
 
 		/* safeguard */
