@@ -56,11 +56,11 @@ void enosc::Roessler::configure( libconfig::Config const & config, std::string c
 }
 
 	/* phase space */
-void enosc::Roessler::init( bool det, bool stoch )
+void enosc::Roessler::init()
 {
 
 		/* base call */
-	enosc::Ensemble::init( true, false );
+	enosc::Ensemble::init();
 
 		/* prepare random state */
 	enosc::host_vector rs( _size );
@@ -99,19 +99,19 @@ void enosc::Roessler::init( bool det, bool stoch )
 
 			_state.begin(), /* cartesian output */
 			_state.begin() + _epsilons.size() * _betas.size() * _size,
-			_state.begin() + _epsilons.size() * _betas.size() * 2*_size ) ),
+			_state.begin() + 2 * _epsilons.size() * _betas.size() * _size ) ),
 
 		_epsilons.size() * _betas.size() * _size, enosc::CylinderToCartesian() );
 
 }
 
-	/* computation */
-enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, enosc::scalar time )
+	/* ode */
+bool enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, enosc::scalar time )
 {
 
 		/* safeguard */
 	if ( state.size() != _state.size() )
-		throw std::runtime_error( "invalid value: enosc::Roessler::compute_deriv_det, state" );
+		throw std::runtime_error( "invalid argument: enosc::Roessler::compute_deriv_det, state" );
 
 		/* compute ode */
 	compute_mean( state );
@@ -121,7 +121,7 @@ enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_v
 
 			state.begin(), /* state input */
 			state.begin() + _epsilons.size() * _betas.size() * _size,
-			state.begin() + _epsilons.size() * _betas.size() * 2*_size,
+			state.begin() + 2 * _epsilons.size() * _betas.size() * _size,
 
 			thrust::make_permutation_iterator( /* coupling input */
 				_epsilons.begin(),
@@ -145,12 +145,12 @@ enosc::device_vector const & enosc::Roessler::compute_deriv_det( enosc::device_v
 					thrust::counting_iterator< unsigned int >( 0 ),
 					thrust::placeholders::_1 / _size ) ),
 
-			_deriv_det.begin(), /* derivative output */
-			_deriv_det.begin() + _epsilons.size() * _betas.size() * _size,
-			_deriv_det.begin() + _epsilons.size() * _betas.size() * 2*_size ) ),
+			_deriv.begin(), /* derivative output */
+			_deriv.begin() + _epsilons.size() * _betas.size() * _size,
+			_deriv.begin() + 2 * _epsilons.size() * _betas.size() * _size ) ),
 
 		_epsilons.size() * _betas.size() * _size, enosc::RoesslerODE( _a, _b, _c ) );
 
-	return _deriv_det;
+	return true;
 }
 

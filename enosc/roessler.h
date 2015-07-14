@@ -38,13 +38,12 @@ namespace enosc
 			/* phase space */
 		public:
 
-			void init( bool det, bool stoch );
+			void init();
 
-			/* computation */
+			/* ode */
 		public:
 
-			enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time );
-			enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) { return _deriv_stoch; }
+			bool compute_deriv_det( enosc::device_vector const & state, enosc::scalar time );
 
 	};
 
@@ -69,13 +68,13 @@ namespace enosc
             enosc::scalar const epsilon = thrust::get< 3 >( t ); /* coupling input */
 			enosc::scalar const beta = thrust::get< 4 >( t );
 
-			enosc::scalar const sinbeta = sin( beta * M_PI );
-			enosc::scalar const cosbeta = cos( beta * M_PI );
-
             enosc::scalar const mx = thrust::get< 5 >( t ); /* meanfield input */
 			enosc::scalar const my = thrust::get< 6 >( t );
 
-			thrust::get< 7 >( t ) = -y - z + epsilon*(mx*cosbeta - my*sinbeta); /* derivative output */
+			enosc::scalar const sinbeta = sin( beta * M_PI ); /* derivative output */
+			enosc::scalar const cosbeta = cos( beta * M_PI );
+
+			thrust::get< 7 >( t ) = -y - z + epsilon*(mx*cosbeta - my*sinbeta);
 			thrust::get< 8 >( t ) = x + a*y + epsilon*(mx*sinbeta + my*cosbeta);
             thrust::get< 9 >( t ) = b + z*(x - c);
 		}

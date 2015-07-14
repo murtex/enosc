@@ -11,6 +11,8 @@
 #include <xis/singleton.h>
 #include <xis/logger.h>
 
+#include <enosc/transforms.h>
+
 	/* con/destruction */
 enosc::Ensemble::Ensemble()
 {
@@ -84,13 +86,10 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 }
 
 	/* phase space */
-void enosc::Ensemble::init( bool det, bool stoch )
+void enosc::Ensemble::init()
 {
 
 		/* safeguard */
-	if ( !det && !stoch )
-		throw std::runtime_error( "invalid values: enosc::Ensemble::init, det | stoch" );
-
 	if ( _dim < 2 || _size == 0 )
 		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size" );
 
@@ -98,71 +97,69 @@ void enosc::Ensemble::init( bool det, bool stoch )
 		throw std::runtime_error( "invalid values: enosc::Enesemble::init, _epsilons | _betas" );
 
 		/* prepare buffers */
-	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* phase state */
+	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* double buffered state */
+	_state_next.resize( _state.size() );
 
-	if ( det ) /* state derivative */
-		_deriv_det.resize( _state.size() );
-	if ( stoch )
-		_deriv_stoch.resize( _state.size() );
+	_polar.resize( 2 * _epsilons.size() * _betas.size() * _size ); /* polar transform */
+	_deriv.resize( _state.size() ); /* derivative */
 
 	_mean.resize( _dim * _epsilons.size() * _betas.size() ); /* ensemble mean */
 
-		/* initialize randomness */
-	srand( _seed );
-
 		/* logging */
-	size_t cuda_free;
-	size_t cuda_total;
-
-	cudaMemGetInfo( &cuda_free, &cuda_total );
-
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
+	size_t cuda_free;
+	size_t cuda_total;
+	cudaMemGetInfo( &cuda_free, &cuda_total );
 	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
 
 }
 
-	/* computation */
-enosc::device_vector const & enosc::Ensemble::compute_deriv( enosc::device_vector const & state, enosc::scalar time )
+void enosc::Ensemble::swap()
 {
 
-		/* safeguard */
-	if ( state.size() != _state.size() )
-		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_deriv, state" );
+		/* swap state buffers */
+	_state = _state_next;
 
-		/* return pure deterministic/stochastic derivative */
-	if ( _deriv_stoch.size() == 0 )
-		return compute_deriv_det( state, time );
-
-	else if ( _deriv_det.size() == 0 )
-		return compute_deriv_stoch( state, time );
-
-		/* return composite derivative */
-	compute_deriv_det( state, time );
-	compute_deriv_stoch( state, time );
-
-	thrust::transform(
-
-		_deriv_det.begin(), /* deterministic input */
-		_deriv_det.end(),
-
-		_deriv_stoch.begin(), /* stochastic input */
-
-		_deriv_det.begin(), /* sum output */
-
-		thrust::plus< enosc::scalar >() );
-
-	return _deriv_det;
 }
 
-enosc::device_vector const & enosc::Ensemble::compute_mean( enosc::device_vector const & buf )
+void enosc::Ensemble::compute_polar( enosc::device_vector const & buf, enosc::device_vector const & buf_deriv )
 {
 
 		/* safeguard */
-	if ( buf.size() != _state.size() )
-		throw std::runtime_error( "invalid value: enosc::Ensemble::compute_mean, buf" );
+	if ( buf.size() % (_dim * _epsilons.size() * _betas.size()) != 0 ||
+			buf_deriv.size() % (_dim * _epsilons.size() * _betas.size()) != 0 )
+		throw std::runtime_error( "invalid arguments: enosc::Ensemble::compute_polar, buf | buf_deriv" );
 
-		/* average ensemble */
+		/* compute polar transform */
+	unsigned int size = buf.size() / (_dim * _epsilons.size() * _betas.size()); /* input ensemble size */
+	if ( buf_deriv.size() < buf.size() )
+		size = buf_deriv.size() / (_dim * _epsilons.size() * _betas.size());
+
+	thrust::for_each_n(
+		thrust::make_zip_iterator( thrust::make_tuple(
+
+			buf.begin(), /* cartesian input */
+			buf.begin() + _epsilons.size() * _betas.size() * size,
+			buf_deriv.begin(),
+			buf_deriv.begin() + _epsilons.size() * _betas.size() * size,
+
+			_polar.begin(), /* polar output */
+			_polar.begin() + _epsilons.size() * _betas.size() * size,
+			_deriv.begin(),
+			_deriv.begin() + _epsilons.size() * _betas.size() * size ) ),
+
+		_epsilons.size() * _betas.size() * size, enosc::CartesianToPolar() );
+}
+
+void enosc::Ensemble::compute_mean( enosc::device_vector const & buf )
+{
+
+		/* safeguard */
+	if ( buf.size() % (_epsilons.size() * _betas.size() * _size) != 0 )
+		throw std::runtime_error( "invalid argument: enosc::Ensemble::compute_mean, buf" );
+
+		/* compute ensemble mean */
 	thrust::reduce_by_key(
 
 		thrust::make_transform_iterator( /* keys */
@@ -172,11 +169,10 @@ enosc::device_vector const & enosc::Ensemble::compute_mean( enosc::device_vector
 			thrust::counting_iterator< unsigned int >( 0 ),
 			thrust::placeholders::_1 / _size ) + buf.size(),
 
-		thrust::make_transform_iterator( /* scaled input */
+		thrust::make_transform_iterator( /* scaled summand */
 			buf.begin(), thrust::placeholders::_1 / _size ),
 
 		thrust::make_discard_iterator(), _mean.begin() ); /* keys, mean output */
 
-	return _mean;
 }
 

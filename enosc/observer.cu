@@ -21,6 +21,10 @@ enosc::Observer::Observer()
 	_size = 1;
 	_meanfield = true;
 
+	_track_raw = true;
+	_track_polar = true;
+	_track_funnel = true;
+
 }
 
 enosc::Observer::~Observer()
@@ -40,9 +44,25 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _size );
 
+	settingname = groupname + "/mean";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _mean );
+
 	settingname = groupname + "/meanfield";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _meanfield );
+
+	settingname = groupname + "/track_raw";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _track_raw );
+
+	settingname = groupname + "/track_polar";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _track_polar );
+
+	settingname = groupname + "/track_funnel";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _track_funnel );
 
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
@@ -50,7 +70,12 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 	logger.log() << "transition: " << _transition << "\n";
 
 	logger.log() << "size: " << _size << "\n";
+	logger.log() << "mean: " << _mean << "\n";
 	logger.log() << "meanfield: " << _meanfield << "\n";
+
+	logger.log() << "track_raw: " << _track_raw << "\n";
+	logger.log() << "track_polar: " << _track_polar << "\n";
+	logger.log() << "track_funnel: " << _track_funnel << "\n";
 
 }
 
@@ -66,5 +91,4 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 		throw std::runtime_error( "invalid value: enosc::Observer::init, _size" );
 
 }
-
 

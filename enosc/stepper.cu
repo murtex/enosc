@@ -52,3 +52,20 @@ void enosc::Stepper::configure( libconfig::Config const & config, std::string co
 
 }
 
+	/* integration */
+void enosc::Stepper::init( enosc::Ensemble const & ensemble )
+{
+
+		/* prepare buffers */
+	_random.resize( ensemble.get_dim() * ensemble.get_epsilons().size() * ensemble.get_betas().size() * ensemble.get_size() ); /* randomness */
+
+		/* logging */
+	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
+
+	size_t cuda_free;
+	size_t cuda_total;
+	cudaMemGetInfo( &cuda_free, &cuda_total );
+	logger.log() << "cuda: " << ((cuda_total-cuda_free)>>20) << "/" << (cuda_total>>20) << "MiB\n";
+
+}
+

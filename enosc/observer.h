@@ -34,13 +34,16 @@ namespace enosc
 			unsigned int _transition; /* observables */
 
 			unsigned int _size;
+			bool _mean;
 			bool _meanfield;
+
+			bool _track_raw;
+			bool _track_polar;
+			bool _track_funnel;
 
 		public:
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
-
-			unsigned int get_transition() const { return _transition; }
 
 			/* observation */
 		public:

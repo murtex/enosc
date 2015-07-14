@@ -18,20 +18,39 @@ void enosc::Euler::configure( libconfig::Config const & config, std::string cons
 }
 
 	/* integration */
+void enosc::Euler::init( enosc::Ensemble const & ensemble )
+{
+
+		/* base call */
+	enosc::Stepper::init( ensemble );
+
+}
+
 void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 {
 
-		/* get state and derivative */
-	enosc::device_vector & state = ensemble.get_state();
-	enosc::device_vector const & deriv = ensemble.compute_deriv( state, _times[step] );
+		/* evolve state */
+	enosc::device_vector const & state = ensemble.get_state();
+	enosc::device_vector const & deriv = ensemble.get_deriv();
 
-		/* evolve state (x + dt*dxdt) */
-	thrust::transform(
-		state.begin(), state.end(),
-		thrust::make_transform_iterator(
-			deriv.begin(), thrust::placeholders::_1 * _dt ),
-		state.begin(),
-		thrust::plus< enosc::scalar >() );
+	enosc::device_vector & state_next = ensemble.get_state_next();
+	state_next = state;
+
+	if ( ensemble.compute_deriv_det( state, _times[step] ) ) /* deterministic component */
+		thrust::transform(
+			state_next.begin(), state_next.end(),
+			thrust::make_transform_iterator(
+				deriv.begin(), thrust::placeholders::_1 * _dt ),
+			state_next.begin(),
+			thrust::plus< enosc::scalar >() );
+
+	if ( ensemble.compute_deriv_stoch( state, _times[step], _random ) ) /* stochastic component, TODO: zero randomness! */
+		thrust::transform(
+			state_next.begin(), state_next.end(),
+			thrust::make_transform_iterator(
+				deriv.begin(), thrust::placeholders::_1 * _dt ),
+			state_next.begin(),
+			thrust::plus< enosc::scalar >() );
 
 }
 

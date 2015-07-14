@@ -38,14 +38,21 @@ namespace enosc
 			/* observation */
 		private:
 
-			H5::H5File _file; /* dataset file */
+			H5::H5File _file; /* datafile */
 
-			H5::DataType _datatype; /* in/out datatype */
+			H5::DataType _datatype; /* datatype */
 
 			H5::DataSet _raw_x; /* dynamic datasets */
 			H5::DataSet _raw_dxdt;
-			H5::DataSet _raw_mf;
-			H5::DataSet _raw_dmfdt;
+			H5::DataSet _raw_mx;
+			H5::DataSet _raw_dmxdt;
+
+			H5::DataSet _polar_x;
+			H5::DataSet _polar_dxdt;
+			H5::DataSet _polar_mx;
+			H5::DataSet _polar_dmxdt;
+			H5::DataSet _polar_mf;
+			H5::DataSet _polar_dmfdt;
 
 		public:
 

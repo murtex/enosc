@@ -30,7 +30,7 @@ namespace enosc
 			/* configuration */
 		protected:
 
-			enosc::host_vector _times; /* integration steps */
+			enosc::host_vector _times; /* stepping */
 			enosc::scalar _dt;
 
 		public:
@@ -41,7 +41,13 @@ namespace enosc
 			enosc::scalar get_dt() const { return _dt; }
 
 			/* integration */
+		protected:
+
+			enosc::device_vector _random; /* randomness */
+
 		public:
+
+			virtual void init( enosc::Ensemble const & ensemble );
 
 			virtual void integrate( enosc::Ensemble & ensemble, unsigned int step ) = 0;
 

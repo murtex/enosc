@@ -32,6 +32,8 @@ namespace enosc
 			/* integration */
 		public:
 
+			void init( enosc::Ensemble const & ensemble );
+
 			void integrate( enosc::Ensemble & ensemble, unsigned int step );
 
 	};

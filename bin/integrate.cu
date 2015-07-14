@@ -107,6 +107,7 @@ void init()
 
 	_stepper = fac_stepper.create( stepper );
 	_stepper->configure( _config, "stepper" );
+	_stepper->init( *_ensemble );
 
 	_logger.untab();
 
@@ -150,9 +151,11 @@ void run()
 
 			_stepper->integrate( *_ensemble, i ); /* integrated state */
 			_observer->observe( *_ensemble, i+1, times[i+1] );
+
+			_ensemble->swap(); /* swap buffers */
+
 		}
 	}
-
 
 }
 

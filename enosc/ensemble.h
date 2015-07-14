@@ -50,29 +50,36 @@ namespace enosc
 			/* phase space */
 		protected:
 
-			enosc::device_vector _state; /* state */
+			enosc::device_vector _state; /* double buffered state */
+			enosc::device_vector _state_next;
 
-		public:
-
-			enosc::device_vector & get_state() { return _state; }
-
-			virtual void init( bool det = true, bool stoch = true );
-
-			/* computation */
-		protected:
-
-			enosc::device_vector _deriv_det; /* state derivatives */
-			enosc::device_vector _deriv_stoch;
+			enosc::device_vector _polar; /* polar transform */
+			enosc::device_vector _deriv; /* derivative */
 
 			enosc::device_vector _mean; /* ensemble mean */
 
 		public:
 
-			enosc::device_vector const & compute_deriv( enosc::device_vector const & state, enosc::scalar time );
-			virtual enosc::device_vector const & compute_deriv_det( enosc::device_vector const & state, enosc::scalar time ) = 0;
-			virtual enosc::device_vector const & compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) = 0;
+			virtual void init();
 
-			enosc::device_vector const & compute_mean( enosc::device_vector const & buf );
+			void swap();
+
+			virtual void compute_polar( enosc::device_vector const & buf, enosc::device_vector const & buf_deriv );
+			void compute_mean( enosc::device_vector const & buf );
+
+			enosc::device_vector & get_state() { return _state; }
+			enosc::device_vector & get_state_next() { return _state_next; }
+
+			enosc::device_vector & get_polar() { return _polar; }
+			enosc::device_vector & get_deriv() { return _deriv; }
+
+			enosc::device_vector & get_mean() { return _mean; }
+
+			/* ode */
+		public:
+
+			virtual bool compute_deriv_det( enosc::device_vector const & state, enosc::scalar time ) { return false; }
+			virtual bool compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time, enosc::device_vector const & random ) { return false; }
 
 	};
 
