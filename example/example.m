@@ -1,15 +1,15 @@
-function example( infile, plotdir )
+function example( datafile, plotdir )
 % test example
 %
-% EXAMPLE( infile, plotdir )
+% EXAMPLE( datafile, plotdir )
 %
 % INPUT
-% infile : data filename (row char)
+% datafile : data filename (row char)
 % plotdir : plot directory (row char)
 
 		% safeguard
-	if nargin < 1 || ~isrow( infile ) || ~ischar( infile ) || exist( infile, 'file' ) ~= 2
-		error( 'invalid argument: infile' );
+	if nargin < 1 || ~isrow( datafile ) || ~ischar( datafile ) || exist( datafile, 'file' ) ~= 2
+		error( 'invalid argument: datafile' );
 	end
 
 	if nargin < 2 || ~isrow( plotdir ) || ~ischar( plotdir )
@@ -23,8 +23,13 @@ function example( infile, plotdir )
 	logger = xis.hLogger.instance( 'example.m.log' );
 	logger.tab( 'plot examples...' );
 
+		% prepare plot directory
+	if exist( plotdir, 'dir' ) ~= 7
+		mkdir( plotdir );
+	end
+
 		% plot some data
-	enosc.plot_raw();
+	enosc.plot_raw( datafile, 0, 0, fullfile( plotdir, 'raw.png' ) );
 
 		% done
 	logger.untab();
