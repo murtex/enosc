@@ -1,4 +1,4 @@
-function example( datafile, plotdir )
+function h5c = example( datafile, plotdir )
 % test example
 %
 % EXAMPLE( datafile, plotdir )
@@ -28,8 +28,11 @@ function example( datafile, plotdir )
 		mkdir( plotdir );
 	end
 
-		% plot some data
-	enosc.plot_raw( datafile, 0, 0, fullfile( plotdir, 'raw.png' ) );
+		% create data container
+	h5c = enosc.hH5C( datafile );
+
+		% DEBUG: some plots
+	enosc.plot_raw( h5c, [], 0, 0, fullfile( plotdir, 'raw.png' ) );
 
 		% done
 	logger.untab();
