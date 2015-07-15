@@ -87,10 +87,10 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 
 		/* safeguard */
 	if ( _transition > stepper.get_times().size()-1 )
-		throw std::runtime_error( "invalid value: enosc::Observer::init, _transition" );
+		throw std::runtime_error( "invalid value (enosc::Observer::init): _transition" );
 
 	if ( _size > ensemble.get_size() )
-		throw std::runtime_error( "invalid value: enosc::Observer::init, _size" );
+		throw std::runtime_error( "invalid value (enosc::Observer::init): _size" );
 
 		/* prepare buffers */
 	_funnel.resize( ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* funneling */
@@ -110,7 +110,7 @@ void enosc::Observer::compute_funnel( enosc::device_vector const & polar_deriv, 
 
 		/* safeguard */
 	if ( polar_deriv.size() % _funnel.size() != 0 )
-		throw std::runtime_error( "invalid argument: enosc::Observer::compute_funnel, polar_deriv" );
+		throw std::runtime_error( "invalid argument (enosc::Observer::compute_funnel): polar_deriv" );
 
 		/* get minimum frequencies */
 	unsigned int stride = _funnel.size();

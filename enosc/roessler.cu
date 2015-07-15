@@ -111,7 +111,7 @@ bool enosc::Roessler::compute_deriv_det( enosc::device_vector const & state, eno
 
 		/* safeguard */
 	if ( state.size() != _state.size() )
-		throw std::runtime_error( "invalid argument: enosc::Roessler::compute_deriv_det, state" );
+		throw std::runtime_error( "invalid argument (enosc::Roessler::compute_deriv_det): state" );
 
 		/* compute ode */
 	compute_mean( state );

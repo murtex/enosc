@@ -61,7 +61,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	else if ( typeid( enosc::scalar ) == typeid( double ) )
 		_datatype = H5::PredType::NATIVE_DOUBLE;
 	else
-		throw std::runtime_error( "invalid type: enosc::HDF5::init, enosc::scalar" );
+		throw std::runtime_error( "invalid type (enosc::HDF5::init): enosc::scalar" );
 
 		/* create static datasets */
 	enosc::device_vector const & epsilons = ensemble.get_epsilons(); /* epsilons */

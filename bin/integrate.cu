@@ -28,7 +28,7 @@ char const * _cl_output = NULL;
 
 void cl_usage( char * cmd )
 {
-	std::cout << "usage: " << cmd << " [-h] [-c config] [-i include] [-o output]" << std::endl;
+	std::cout << "usage: " << cmd << " [-h] -c config [-i include] [-o output]" << std::endl;
 }
 
 void cl_parse( int argc, char ** argv )
@@ -58,6 +58,10 @@ void cl_parse( int argc, char ** argv )
 				break;
 
 		}
+
+		/* check options */
+	if ( _cl_config == NULL )
+		throw std::runtime_error( "invalid value (cl_parse): _cl_config" );
 
 }
 

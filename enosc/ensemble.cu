@@ -91,10 +91,10 @@ void enosc::Ensemble::init()
 
 		/* safeguard */
 	if ( _dim < 2 || _size == 0 )
-		throw std::runtime_error( "invalid values: enosc::Ensemble::init, _dim | _size" );
+		throw std::runtime_error( "invalid values (enosc::Ensemble::init): _dim | _size" );
 
 	if ( _epsilons.size() == 0 || _betas.size() == 0 )
-		throw std::runtime_error( "invalid values: enosc::Enesemble::init, _epsilons | _betas" );
+		throw std::runtime_error( "invalid values (enosc::Enesemble::init): _epsilons | _betas" );
 
 		/* prepare buffers */
 	_state.resize( _dim * _epsilons.size() * _betas.size() * _size ); /* double buffered state */
@@ -129,7 +129,7 @@ void enosc::Ensemble::compute_polar( enosc::device_vector const & buf, enosc::de
 		/* safeguard */
 	if ( buf.size() % (_dim * _epsilons.size() * _betas.size()) != 0 ||
 			buf_deriv.size() % (_dim * _epsilons.size() * _betas.size()) != 0 )
-		throw std::runtime_error( "invalid arguments: enosc::Ensemble::compute_polar, buf | buf_deriv" );
+		throw std::runtime_error( "invalid arguments (enosc::Ensemble::compute_polar): buf | buf_deriv" );
 
 		/* compute polar transform */
 	unsigned int size = buf.size() / (_dim * _epsilons.size() * _betas.size()); /* input ensemble size */
@@ -157,7 +157,7 @@ void enosc::Ensemble::compute_mean( enosc::device_vector const & buf )
 
 		/* safeguard */
 	if ( buf.size() % (_epsilons.size() * _betas.size() * _size) != 0 )
-		throw std::runtime_error( "invalid argument: enosc::Ensemble::compute_mean, buf" );
+		throw std::runtime_error( "invalid argument (enosc::Ensemble::compute_mean): buf" );
 
 		/* compute ensemble mean */
 	thrust::reduce_by_key(
