@@ -1,13 +1,11 @@
-function plot( infile, outdir )
+function example( infile, outdir )
 % test example
 %
-% TEST( infile, outdir )
+% EXAMPLE( infile, outdir )
 %
 % INPUT
 % infile : data filename (row char)
 % outdir : output directory (row char)
-
-	'bla'
 
 		% safeguard
 	if nargin < 1 || ~isrow( infile ) || ~ischar( infile )

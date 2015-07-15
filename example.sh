@@ -2,14 +2,14 @@
 
 SRCDIR=`pwd`
 BUILDDIR="${SRCDIR}/build/"
-TESTDIR="${SRCDIR}/test/"
+EXAMPLEDIR="${SRCDIR}/example/"
 
-CONFIG="test.conf"
-INCLUDE="./"
-OUTPUT="test.h5"
-PLOTDIR="plot/"
+CONFIG=example.conf
+INCLUDE=./
+DATAFILE=example.h5
+PLOTDIR=plot/
 
-cd ${TESTDIR}
-#${BUILDDIR}/bin/integrate -c ${CONFIG} -o ${OUTPUT} -i ${INCLUDE}
-matlab -nosplash -nodesktop -r "plot( ${OUTPUT}, ${PLOTDIR} ); exit();"
+cd ${EXAMPLEDIR}
+#${BUILDDIR}/bin/integrate -c ${CONFIG} -o ${DATAFILE} -i ${INCLUDE}
+matlab -nosplash -nodesktop -r "example( '${DATAFILE}', '${PLOTDIR}' ); exit();"
 
