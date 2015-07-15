@@ -64,25 +64,25 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 		throw std::runtime_error( "invalid type (enosc::HDF5::init): enosc::scalar" );
 
 		/* create static datasets */
+	enosc::host_vector const & ctimes = stepper.get_times(); /* times */
+	enosc::host_vector times( ctimes.begin() + _transition, ctimes.end() );
+	hsize_t dim = times.size();
+	H5::DataSet dataset = _file.createDataSet( "times", _datatype, H5::DataSpace( 1, &dim ) );
+	dataset.write( times.data(), _datatype );
+
+	enosc::scalar dt = stepper.get_dt(); /* dt */
+	dataset = _file.createDataSet( "dt", _datatype, H5::DataSpace() );
+	dataset.write( &dt, _datatype );
+
 	enosc::device_vector const & epsilons = ensemble.get_epsilons(); /* epsilons */
-	hsize_t dim = epsilons.size();
-	H5::DataSet dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dim ) );
+	dim = epsilons.size();
+	dataset = _file.createDataSet( "epsilons", _datatype, H5::DataSpace( 1, &dim ) );
 	dataset.write( enosc::host_vector( epsilons.begin(), epsilons.end() ).data(), _datatype );
 
 	enosc::device_vector const & betas = ensemble.get_betas(); /* betas */
 	dim = betas.size();
 	dataset = _file.createDataSet( "betas", _datatype, H5::DataSpace( 1, &dim ) );
 	dataset.write( enosc::host_vector( betas.begin(), betas.end() ).data(), _datatype );
-
-	enosc::host_vector const & ctimes = stepper.get_times(); /* times */
-	enosc::host_vector times( ctimes.begin() + _transition, ctimes.end() );
-	dim = times.size();
-	dataset = _file.createDataSet( "times", _datatype, H5::DataSpace( 1, &dim ) );
-	dataset.write( times.data(), _datatype );
-
-	enosc::scalar dt = stepper.get_dt(); /* dt */
-	dataset = _file.createDataSet( "dt", _datatype, H5::DataSpace() );
-	dataset.write( &dt, _datatype );
 
 		/* initialize dynamic datasets */
 
