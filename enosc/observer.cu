@@ -18,10 +18,11 @@ enosc::Observer::Observer()
 {
 
 		/* default configuration */
-	_transition = 0;
-
-	_size = 1;
+	_oscillator = true; /* observables */
+	_ensemble = true;
 	_meanfield = true;
+
+	_transition = 0; /* tracking */
 
 	_track_raw = true;
 	_track_polar = true;
@@ -38,21 +39,21 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 {
 
 		/* parse group settings */
-	std::string settingname = groupname + "/transition_steps";
+	std::string settingname = groupname + "/oscillator";
 	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _transition );
+		config.lookupValue( settingname, _oscillator );
 
-	settingname = groupname + "/size";
+	settingname = groupname + "/ensemble";
 	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _size );
-
-	settingname = groupname + "/mean";
-	if ( config.exists( settingname ) )
-		config.lookupValue( settingname, _mean );
+		config.lookupValue( settingname, _ensemble );
 
 	settingname = groupname + "/meanfield";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _meanfield );
+
+	settingname = groupname + "/transition_steps";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _transition );
 
 	settingname = groupname + "/track_raw";
 	if ( config.exists( settingname ) )
@@ -69,12 +70,11 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
-	logger.log() << "transition: " << _transition << "\n";
-
-	logger.log() << "size: " << _size << "\n";
-	logger.log() << "mean: " << _mean << "\n";
+	logger.log() << "oscillator: " << _oscillator << "\n";
+	logger.log() << "ensemble: " << _ensemble << "\n";
 	logger.log() << "meanfield: " << _meanfield << "\n";
 
+	logger.log() << "transition: " << _transition << "\n";
 	logger.log() << "track_raw: " << _track_raw << "\n";
 	logger.log() << "track_polar: " << _track_polar << "\n";
 	logger.log() << "track_funnel: " << _track_funnel << "\n";
@@ -86,11 +86,11 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 {
 
 		/* safeguard */
+	if ( _oscillator && ensemble.get_size() < 1 )
+		throw std::runtime_error( "invalid value (enosc::Observer::init): _oscillator" );
+
 	if ( _transition > stepper.get_times().size()-1 )
 		throw std::runtime_error( "invalid value (enosc::Observer::init): _transition" );
-
-	if ( _size > ensemble.get_size() )
-		throw std::runtime_error( "invalid value (enosc::Observer::init): _size" );
 
 		/* prepare buffers */
 	_funnel.resize( ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* funneling */

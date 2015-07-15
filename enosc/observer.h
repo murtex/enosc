@@ -31,11 +31,11 @@ namespace enosc
 			/* configuration */
 		protected:
 
-			unsigned int _transition; /* observables */
-
-			unsigned int _size;
-			bool _mean;
+			bool _oscillator; /* observables */
+			bool _ensemble;
 			bool _meanfield;
+
+			unsigned int _transition; /* tracking */
 
 			bool _track_raw;
 			bool _track_polar;

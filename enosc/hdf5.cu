@@ -90,27 +90,27 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	H5::Group group = _file.createGroup( "raw" );
 
 	H5::DSetCreatPropList props; /* oscillators */
-	hsize_t chunks[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
-	chunks[4] = _size * (_track_raw ? 1 : 0);
+	hsize_t chunks[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), (hsize_t) (_oscillator ? 1 : 0)};
+	chunks[4] = (_oscillator ? 1 : 0) * (_track_raw ? 1 : 0);
 	if ( _deflate != 0 ) {
 		props.setChunk( 5, chunks );
 		props.setDeflate( _deflate );
 		props.setShuffle();
 	}
 
-	hsize_t dims[5] = {times.size(), ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size};
-	dims[4] = _size * (_track_raw ? 1 : 0);
+	hsize_t dims[5] = {times.size(), ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), (hsize_t) (_oscillator ? 1 : 0)};
+	dims[4] = (_oscillator ? 1 : 0) * (_track_raw ? 1 : 0);
 	_raw_x = group.createDataSet( "x", _datatype, H5::DataSpace( 5, dims ), props );
 	_raw_dxdt = group.createDataSet( "dxdt", _datatype, H5::DataSpace( 5, dims ), props );
 
-	chunks[4] = (_mean ? 1 : 0) * (_track_raw ? 1 : 0); /* mean */
+	chunks[4] = (_ensemble ? 1 : 0) * (_track_raw ? 1 : 0); /* mean */
 	if ( _deflate != 0 ) {
 		props.setChunk( 5, chunks );
 		props.setDeflate( _deflate );
 		props.setShuffle();
 	}
 
-	dims[4] = (_mean ? 1 : 0) * (_track_raw ? 1 : 0);
+	dims[4] = (_ensemble ? 1 : 0) * (_track_raw ? 1 : 0);
 	_raw_mx = group.createDataSet( "mx", _datatype, H5::DataSpace( 5, dims ), props );
 	_raw_dmxdt = group.createDataSet( "dmxdt", _datatype, H5::DataSpace( 5, dims ), props );
 
@@ -118,7 +118,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	group = _file.createGroup( "polar" );
 
 	chunks[1] = 2; /* oscillators */
-	chunks[4] = _size * (_track_polar ? 1 : 0);
+	chunks[4] = (_oscillator ? 1 : 0) * (_track_polar ? 1 : 0);
 	if ( _deflate != 0 ) {
 		props.setChunk( 5, chunks );
 		props.setDeflate( _deflate );
@@ -126,18 +126,18 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	}
 
 	dims[1] = 2;
-	dims[4] = _size * (_track_polar ? 1 : 0);
+	dims[4] = (_oscillator ? 1 : 0) * (_track_polar ? 1 : 0);
 	_polar_x = group.createDataSet( "x", _datatype, H5::DataSpace( 5, dims ), props );
 	_polar_dxdt = group.createDataSet( "dxdt", _datatype, H5::DataSpace( 5, dims ), props );
 
-	chunks[4] = (_mean ? 1 : 0) * (_track_polar ? 1 : 0); /* mean */
+	chunks[4] = (_ensemble ? 1 : 0) * (_track_polar ? 1 : 0); /* mean */
 	if ( _deflate != 0 ) {
 		props.setChunk( 5, chunks );
 		props.setDeflate( _deflate );
 		props.setShuffle();
 	}
 
-	dims[4] = (_mean ? 1 : 0) * (_track_polar ? 1 : 0);
+	dims[4] = (_ensemble ? 1 : 0) * (_track_polar ? 1 : 0);
 	_polar_mx = group.createDataSet( "mx", _datatype, H5::DataSpace( 5, dims ), props );
 	_polar_dmxdt = group.createDataSet( "dmxdt", _datatype, H5::DataSpace( 5, dims ), props );
 
@@ -156,7 +156,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	group = _file.createGroup( "funnel" );
 
 	chunks[1] = 1; /* mean */
-	chunks[4] = (_mean ? 1 : 0) * (_track_funnel ? 1 : 0);
+	chunks[4] = (_ensemble ? 1 : 0) * (_track_funnel ? 1 : 0);
 	if ( _deflate != 0 ) {
 		props.setChunk( 5, chunks );
 		props.setDeflate( _deflate );
@@ -164,7 +164,7 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 	}
 
 	dims[1] = 1;
-	dims[4] = (_mean ? 1 : 0) * (_track_funnel ? 1 : 0);
+	dims[4] = (_ensemble ? 1 : 0) * (_track_funnel ? 1 : 0);
 	_funnel_mx = group.createDataSet( "mx", _datatype, H5::DataSpace( 5, dims ), props );
 
 	chunks[4] = (_meanfield ? 1 : 0) * (_track_funnel ? 1 : 0); /* meanfield */
@@ -198,12 +198,12 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 		/* raw oscillators */
 	hsize_t dims_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), ensemble.get_size()};
 	hsize_t starts_in[4] = {0, 0, 0, 0};
-	hsize_t counts_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size * (_track_raw ? 1 : 0)};
+	hsize_t counts_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), (hsize_t) (_oscillator ? 1 : 0) * (_track_raw ? 1 : 0)};
 	H5::DataSpace dataspace_in = H5::DataSpace( 4, dims_in );
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	hsize_t starts_out[5] = {step - _transition, 0, 0, 0, 0};
-	hsize_t counts_out[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), _size * (_track_raw ? 1 : 0)};
+	hsize_t counts_out[5] = {1, ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), (hsize_t) (_oscillator ? 1 : 0) * (_track_raw ? 1 : 0)};
 	H5::DataSpace dataspace_out = _raw_x.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
@@ -218,12 +218,12 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 		/* polar oscillators */
 	dims_in[0] = 2;
 	counts_in[0] = 2;
-	counts_in[3] = _size * (_track_polar ? 1 : 0);
+	counts_in[3] = (_oscillator ? 1 : 0) * (_track_polar ? 1 : 0);
 	dataspace_in = H5::DataSpace( 4, dims_in );
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	counts_out[1] = 2;
-	counts_out[4] = _size * (_track_polar ? 1 : 0);
+	counts_out[4] = (_oscillator ? 1 : 0) * (_track_polar ? 1 : 0);
 	dataspace_out = _polar_x.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
@@ -235,12 +235,12 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dims_in[0] = 1;
 	dims_in[3] = 1;
 	counts_in[0] = 1;
-	counts_in[3] = (_mean ? 1 : 0) * (_track_funnel ? 1 : 0);
+	counts_in[3] = (_ensemble ? 1 : 0) * (_track_funnel ? 1 : 0);
 	dataspace_in = H5::DataSpace( 4, dims_in );
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	counts_out[1] = 1;
-	counts_out[4] = (_mean ? 1 : 0) * (_track_funnel ? 1 : 0);
+	counts_out[4] = (_ensemble ? 1 : 0) * (_track_funnel ? 1 : 0);
 	dataspace_out = _funnel_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
@@ -250,12 +250,12 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 		/* polar mean */
 	dims_in[0] = 2;
 	counts_in[0] = 2;
-	counts_in[3] = (_mean ? 1 : 0) * (_track_polar ? 1 : 0);
+	counts_in[3] = (_ensemble ? 1 : 0) * (_track_polar ? 1 : 0);
 	dataspace_in = H5::DataSpace( 4, dims_in );
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	counts_out[1] = 2;
-	counts_out[4] = (_mean ? 1 : 0) * (_track_polar ? 1 : 0);
+	counts_out[4] = (_ensemble ? 1 : 0) * (_track_polar ? 1 : 0);
 	dataspace_out = _polar_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
@@ -268,12 +268,12 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 		/* raw mean (raw meanfield) */
 	dims_in[0] = ensemble.get_dim();
 	counts_in[0] = ensemble.get_dim();
-	counts_in[3] = (_mean ? 1 : 0) * (_track_raw ? 1 : 0);
+	counts_in[3] = (_ensemble ? 1 : 0) * (_track_raw ? 1 : 0);
 	dataspace_in = H5::DataSpace( 4, dims_in );
 	dataspace_in.selectHyperslab( H5S_SELECT_SET, counts_in, starts_in );
 
 	counts_out[1] = ensemble.get_dim();
-	counts_out[4] = (_mean ? 1 : 0) * (_track_raw ? 1 : 0);
+	counts_out[4] = (_ensemble ? 1 : 0) * (_track_raw ? 1 : 0);
 	dataspace_out = _raw_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
