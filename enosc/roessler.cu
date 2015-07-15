@@ -11,7 +11,7 @@
 #include <xis/singleton.h>
 #include <xis/logger.h>
 
-#include <enosc/transforms.h>
+#include <enosc/kernels.h>
 
 	/* con/destruction */
 enosc::Roessler::Roessler()
