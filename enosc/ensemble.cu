@@ -162,17 +162,17 @@ void enosc::Ensemble::compute_mean( enosc::device_vector const & buf )
 		/* compute ensemble mean */
 	thrust::reduce_by_key(
 
-		thrust::make_transform_iterator( /* keys */
+		thrust::make_transform_iterator( /* input keys */
 			thrust::counting_iterator< unsigned int >( 0 ),
 			thrust::placeholders::_1 / _size ),
 		thrust::make_transform_iterator(
 			thrust::counting_iterator< unsigned int >( 0 ),
 			thrust::placeholders::_1 / _size ) + buf.size(),
 
-		thrust::make_transform_iterator( /* scaled summand */
+		thrust::make_transform_iterator( /* input summands (scaled) */
 			buf.begin(), thrust::placeholders::_1 / _size ),
 
-		thrust::make_discard_iterator(), _mean.begin() ); /* keys, mean output */
+		thrust::make_discard_iterator(), _mean.begin() ); /* output keys, means */
 
 }
 

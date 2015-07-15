@@ -11,6 +11,8 @@
 #include <xis/singleton.h>
 #include <xis/logger.h>
 
+#include <enosc/kernels.h>
+
 	/* con/destruction */
 enosc::Observer::Observer()
 {
@@ -110,7 +112,29 @@ void enosc::Observer::compute_funnel( enosc::device_vector const & polar_deriv, 
 	if ( polar_deriv.size() % _funnel.size() != 0 )
 		throw std::runtime_error( "invalid argument: enosc::Observer::compute_funnel, polar_deriv" );
 
-		/* TODO: accumulate negative frequencies */
+		/* get minimum frequencies */
+	unsigned int stride = _funnel.size();
+
+	thrust::reduce_by_key(
+
+		thrust::make_transform_iterator( /* input keys */
+			thrust::counting_iterator< unsigned int >( 0 ),
+			thrust::placeholders::_1 / size ),
+		thrust::make_transform_iterator(
+			thrust::counting_iterator< unsigned int >( 0 ),
+			thrust::placeholders::_1 / size ) + stride * size,
+
+		polar_deriv.begin() + stride * size, /* input frequencies */
+
+		thrust::make_discard_iterator(), _funnel.begin(), /* output keys, minima */
+		
+		thrust::equal_to< unsigned int >(), thrust::minimum< enosc::scalar >() );
+
+		/* zero positive frequencies */
+	thrust::transform_if(
+		_funnel.begin(), _funnel.begin() + stride * size,
+		_funnel.begin(),
+		enosc::SetZero(), enosc::IsPositive() );
 
 }
 
