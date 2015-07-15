@@ -63,6 +63,9 @@ void cl_parse( int argc, char ** argv )
 	if ( _cl_config == NULL )
 		throw std::runtime_error( "invalid value (cl_parse): _cl_config" );
 
+	if ( _cl_output == NULL )
+		throw std::runtime_error( "invalid value (cl_parse): _cl_output" );
+
 }
 
 	/* workflow */
@@ -81,8 +84,7 @@ void init()
 	if ( _cl_include != NULL )
 		_config.setIncludeDir( _cl_include );
 
-	if ( _cl_config != NULL )
-		_config.readFile( _cl_config );
+	_config.readFile( _cl_config );
 
 		/* configure logger */
 	_logger.configure( _config, "logger" );
