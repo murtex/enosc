@@ -8,7 +8,7 @@ function example( infile, outdir )
 % outdir : output directory (row char)
 
 		% safeguard
-	if nargin < 1 || ~isrow( infile ) || ~ischar( infile )
+	if nargin < 1 || ~isrow( infile ) || ~ischar( infile ) || ~exist( infile, 'file' ) ~= 2
 		error( 'invalid argument: infile' );
 	end
 
