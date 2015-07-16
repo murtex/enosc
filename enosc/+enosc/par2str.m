@@ -19,7 +19,7 @@ function s = par2str( seq )
 	if seq(1) == seq(end)
 		s = num2str( seq(1) );
 	else
-		s = cat( 2, num2str( seq(1) ), '..', num2str( seq(end) ) );
+		s = cat( 2, '[', num2str( seq(1) ), '..', num2str( seq(end) ), ' (', num2str( numel( seq ) ), ')]' );
 	end
 	
 end

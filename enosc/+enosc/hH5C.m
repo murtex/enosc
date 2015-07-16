@@ -23,8 +23,8 @@ classdef hH5C < handle
 			% observables
 		dim = 0; % dimensionality (scalar numeric)
 
-		size = 0; % number of oscillators (scalar numeric)
-		mean = false; % ensemble mean flag (scalar logical)
+		oscillator = false; % oscillator flag (scalar logical)
+		ensemble = false; % ensemble mean flag (scalar logical)
 		meanfield = false; % meanfield flag (scalar logical)
 
 	end
@@ -98,26 +98,26 @@ classdef hH5C < handle
 				% get observables
 			if this.raw_track % oscillators
 				info = h5info( filename, '/raw/x' );
-				this.size = info.Dataspace.Size(1);
+				this.oscillator = true;
 				this.dim = info.Dataspace.Size(4); % dimensionality
 			else
 				if this.polar_track
 					info = h5info( filename, '/polar/x' );
-					this.size = info.Dataspace.Size(1);
+					this.oscillator = true;
 				end
 			end
 
 			if this.raw_track % ensemble mean
 				info = h5info( filename, '/raw/mx' );
-				this.mean = true;
+				this.ensemble = true;
 			else
 				if this.polar_track
 					info = h5info( filename, '/polar/mx' );
-					this.mean = true;
+					this.ensemble = true;
 				else
 					if this.funnel_track
 						info = h5info( filename, '/funnel/mx' );
-						this.mean = true;
+						this.ensemble = true;
 					end
 				end
 			end

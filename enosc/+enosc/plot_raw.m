@@ -52,19 +52,19 @@ function plot_raw( h5c, times, epsilons, betas, plotfile )
 
 		% read data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
-	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.size];
+	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.oscillator];
 	x = double( h5read( h5c.filename, '/raw/x', fliplr( starts ), fliplr( counts ) ) );
 	size( x ) % DEBUG
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
-	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.mean];
+	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
 	mx = double( h5read( h5c.filename, '/raw/mx', fliplr( starts ), fliplr( counts ) ) );
 	size( mx ) % DEBUG
 
 		% prepare plot
 	fig = style.figure();
 
-	title( sprintf( 'raw (time: %s, epsilon: %s, beta: %s)', ...
+	title( sprintf( 'raw trajectory (time: %s, epsilon: %s, beta: %s)', ...
 		enosc.par2str( times ), enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
 	xlabel( 'x' );
@@ -72,29 +72,42 @@ function plot_raw( h5c, times, epsilons, betas, plotfile )
 	zlabel( 'z' );
 
 		% plot
-	switch h5c.dim
+	shades = linspace( 2, 0, numel( iepsilons ) * numel( ibetas ) );
+	ishade = 1;
 
-		case 2 % two-dimensional
+	for i = iepsilons
+		for j = ibetas
+			switch h5c.dim
 
-		case 3 % three-dimensional
+				case 2 % two-dimensional
 
-			view( 20, 35.26 ); % TODO: dimetric perspective!
+				case 3 % three-dimensional
 
-			plot3( ...
-				squeeze( x(1, 1, 1, 1, :) ), ...
-				squeeze( x(1, 1, 1, 2, :) ), ...
-				squeeze( x(1, 1, 1, 3, :) ), ...
-				'Color', style.color( 'cold', 0 ) );
+					view( 20, 35 );
 
-			plot3( ...
-				squeeze( mx(1, 1, 1, 1, :) ), ...
-				squeeze( mx(1, 1, 1, 2, :) ), ...
-				squeeze( mx(1, 1, 1, 3, :) ), ...
-				'Color', style.color( 'warm', 0 ) );
+					if h5c.oscillator % oscillator
+						plot3( ...
+							squeeze( x(1, j-ibetas(1)+1, i-iepsilons(1)+1, 1, :) ), ...
+							squeeze( x(1, j-ibetas(1)+1, i-iepsilons(1)+1, 2, :) ), ...
+							squeeze( x(1, j-ibetas(1)+1, i-iepsilons(1)+1, 3, :) ), ...
+							'Color', style.color( 'cold', shades(ishade) ) );
+					end
 
-		otherwise
-			warning( 'invalid value: h5c.dim' );
+					if h5c.ensemble % ensemble mean (raw meanfield)
+						plot3( ...
+							squeeze( mx(1, j-ibetas(1)+1, i-iepsilons(1)+1, 1, :) ), ...
+							squeeze( mx(1, j-ibetas(1)+1, i-iepsilons(1)+1, 2, :) ), ...
+							squeeze( mx(1, j-ibetas(1)+1, i-iepsilons(1)+1, 3, :) ), ...
+							'Color', style.color( 'warm', shades(ishade) ) );
+					end
 
+				otherwise
+					warning( 'invalid value: h5c.dim' );
+
+			end
+		end
+
+		ishade = ishade + 1;
 	end
 
 		% done
