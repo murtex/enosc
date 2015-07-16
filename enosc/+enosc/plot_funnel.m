@@ -54,71 +54,115 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
 	mx = double( abs( sum( h5read( h5c.filename, '/funnel/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
-	size( mx ) % DEBUG
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
 	mf = double( abs( sum( h5read( h5c.filename, '/funnel/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
-	size( mf ) % DEBUG
+
+		% normalize funnel data
+	mxmax = max( mx(:) );
+	if mxmax ~= 0
+		mx = mx / mxmax;
+	end
+	mfmax = max( mf(:) );
+	if mfmax ~= 0
+		mf = mf / mfmax;
+	end
+
+	total = mx + mf;
+	totalmax = max( total(:) );
+	if totalmax ~= 0
+		total = total / totalmax;
+	end
 
 		% plot
 	fig = style.figure();
 
-	if numel( epsilons ) == 1 % fixed epsilon
+	if numel( epsilons ) == 1 && numel( betas ) > 1 % fixed epsilon
 
-		subplot( 1, 2, 1 ); % ensemble mean
-		title( sprintf( 'ensemble funnel (time: %s, epsilon: %s)', enosc.par2str( times ), enosc.par2str( epsilons ) ) );
+		subplot( 2, 2, [1, 2] ); % total
+		title( sprintf( 'total funnel (time: %s, epsilon: %s)', enosc.par2str( times ), enosc.par2str( epsilons ) ) );
 		xlabel( 'beta' );
 		ylabel( 'funnel' );
 		xlim( [min( betas ), max( betas )] );
+		ylim( [0, 1] );
+		plot( betas, squeeze( total ), ...
+			'Color', style.color( 'warm', 0 ) );
+
+		subplot( 2, 2, 3 ); % ensemble mean
+		title( 'ensemble funnel' );
+		xlabel( 'beta' );
+		ylabel( 'funnel' );
+		xlim( [min( betas ), max( betas )] );
+		ylim( [0, 1] );
 		plot( betas, squeeze( mx ), ...
 			'Color', style.color( 'warm', 0 ) );
 
-		subplot( 1, 2, 2 ); % meanfield
-		title( sprintf( 'meanfield funnel (time: %s, epsilon: %s)', enosc.par2str( times ), enosc.par2str( epsilons ) ) );
+		subplot( 2, 2, 4 ); % meanfield
+		title( 'meanfield funnel' );
 		xlabel( 'beta' );
 		ylabel( 'funnel' );
 		xlim( [min( betas ), max( betas )] );
+		ylim( [0, 1] );
 		plot( betas, squeeze( mf ), ...
 			'Color', style.color( 'warm', 0 ) );
 	
-	elseif numel( betas ) == 1 % fixed beta
+	elseif numel( epsilons ) > 1 && numel( betas ) == 1 % fixed beta
 
-		subplot( 1, 2, 1 ); % ensemble mean
-		title( sprintf( 'ensemble funnel (time: %s, beta: %s)', enosc.par2str( times ), enosc.par2str( betas ) ) );
+		subplot( 2, 2, [1, 2] ); % total
+		title( sprintf( 'total funnel (time: %s, beta: %s)', enosc.par2str( times ), enosc.par2str( betas ) ) );
 		xlabel( 'epsilon' );
 		ylabel( 'funnel' );
 		xlim( [min( epsilons ), max( epsilons )] );
+		ylim( [0, 1] );
+		plot( epsilons, squeeze( total ), ...
+			'Color', style.color( 'warm', 0 ) );
+
+		subplot( 2, 2, 3 ); % ensemble mean
+		title( 'ensemble funnel' );
+		xlabel( 'epsilon' );
+		ylabel( 'funnel' );
+		xlim( [min( epsilons ), max( epsilons )] );
+		ylim( [0, 1] );
 		plot( epsilons, squeeze( mx ), ...
 			'Color', style.color( 'warm', 0 ) );
 
-		subplot( 1, 2, 2 ); % meanfield
-		title( sprintf( 'meanfield funnel (time: %s, beta: %s)', enosc.par2str( times ), enosc.par2str( betas ) ) );
+		subplot( 2, 2, 4 ); % meanfield
+		title( 'meanfield funnel' );
 		xlabel( 'epsilon' );
 		ylabel( 'funnel' );
 		xlim( [min( epsilons ), max( epsilons )] );
+		ylim( [0, 1] );
 		plot( epsilons, squeeze( mf ), ...
 			'Color', style.color( 'warm', 0 ) );
 	
-	else % epsilon-beta-map
+	elseif numel( epsilons ) > 1 && numel( betas ) > 1  % epsilon-beta-map
 
-		subplot( 1, 2, 1 ); % ensemble mean
-		title( sprintf( 'ensemble funnel (time: %s)', enosc.par2str( times ) ) );
+		colormap( style.gradient( 64, [1, 1, 1], style.color( 'warm', 0 ) ) );
+
+		subplot( 2, 2, [1, 2] ); % total
+		title( sprintf( 'total funnel (time: %s)', enosc.par2str( times ) ) );
 		xlabel( 'epsilon' );
 		ylabel( 'beta' );
 		xlim( [min( epsilons ), max( epsilons )] );
 		ylim( [min( betas ), max( betas )] );
-		colormap( style.gradient( 64, [1, 1, 1], style.color( 'warm', 0 ) ) );
-		imagesc( epsilons, betas, log( squeeze( mx ) + eps ) );
+		imagesc( epsilons, betas, squeeze( total ) );
 
-		subplot( 1, 2, 2 ); % meanfield
-		title( sprintf( 'meanfield funnel (time: %s)', enosc.par2str( times ) ) );
+		subplot( 2, 2, 3 ); % ensemble mean
+		title( 'ensemble funnel' );
 		xlabel( 'epsilon' );
 		ylabel( 'beta' );
 		xlim( [min( epsilons ), max( epsilons )] );
 		ylim( [min( betas ), max( betas )] );
-		colormap( style.gradient( 64, [1, 1, 1], style.color( 'warm', 0 ) ) );
-		imagesc( epsilons, betas, log( squeeze( mf ) + eps ) );
+		imagesc( epsilons, betas, squeeze( mx ) );
+
+		subplot( 2, 2, 4 ); % meanfield
+		title( 'meanfield funnel' );
+		xlabel( 'epsilon' );
+		ylabel( 'beta' );
+		xlim( [min( epsilons ), max( epsilons )] );
+		ylim( [min( betas ), max( betas )] );
+		imagesc( epsilons, betas, squeeze( mf ) );
 
 	end
 

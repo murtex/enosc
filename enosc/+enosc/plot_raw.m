@@ -54,12 +54,10 @@ function plot_raw( h5c, times, epsilons, betas, plotfile )
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.oscillator];
 	x = double( h5read( h5c.filename, '/raw/x', fliplr( starts ), fliplr( counts ) ) );
-	size( x ) % DEBUG
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
 	mx = double( h5read( h5c.filename, '/raw/mx', fliplr( starts ), fliplr( counts ) ) );
-	size( mx ) % DEBUG
 
 		% prepare plot
 	fig = style.figure();
