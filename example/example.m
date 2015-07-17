@@ -32,7 +32,7 @@ function h5c = example( datafile, plotdir )
 	h5c = enosc.hH5C( datafile );
 
 		% DEBUG: some plots
-	enosc.plot_raw( h5c, [], 0, 0, fullfile( plotdir, 'raw.png' ) );
+	enosc.plot_raw( h5c, [], 0.035, 0, fullfile( plotdir, 'raw.png' ) );
 	enosc.plot_funnel( h5c, [], [], [], fullfile( plotdir, 'funnel.png' ) );
 
 		% done
