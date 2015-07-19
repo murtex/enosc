@@ -69,11 +69,8 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		mf = mf / mfmax;
 	end
 
-	total = mx + mf;
-	totalmax = max( total(:) );
-	if totalmax ~= 0
-		total = total / totalmax;
-	end
+		% compute total funnel
+	total = (mx + mf) / 2;
 
 		% plot
 	fig = style.figure();
@@ -87,7 +84,7 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( betas ), max( betas )] );
 		ylim( [0, 1] );
 		plot( betas, squeeze( total ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 
 		subplot( 2, 2, 3, 'YTickLabel', {} ); % ensemble mean
 		title( 'ensemble funnel' );
@@ -96,7 +93,7 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( betas ), max( betas )] );
 		ylim( [0, 1] );
 		plot( betas, squeeze( mx ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 
 		subplot( 2, 2, 4, 'YTickLabel', {} ); % meanfield
 		title( 'meanfield funnel' );
@@ -105,7 +102,7 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( betas ), max( betas )] );
 		ylim( [0, 1] );
 		plot( betas, squeeze( mf ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 	
 	elseif numel( epsilons ) > 1 && numel( betas ) == 1 % fixed beta
 
@@ -116,7 +113,7 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( epsilons ), max( epsilons )] );
 		ylim( [0, 1] );
 		plot( epsilons, squeeze( total ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 
 		subplot( 2, 2, 3, 'YTickLabel', {} ); % ensemble mean
 		title( 'ensemble funnel' );
@@ -125,7 +122,7 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( epsilons ), max( epsilons )] );
 		ylim( [0, 1] );
 		plot( epsilons, squeeze( mx ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 
 		subplot( 2, 2, 4, 'YTickLabel', {} ); % meanfield
 		title( 'meanfield funnel' );
@@ -134,11 +131,11 @@ function plot_funnel( h5c, times, epsilons, betas, plotfile )
 		xlim( [min( epsilons ), max( epsilons )] );
 		ylim( [0, 1] );
 		plot( epsilons, squeeze( mf ), ...
-			'Color', style.color( 'warm', 0 ) );
+			'Color', style.color( 'cold', 0 ) );
 	
 	elseif numel( epsilons ) > 1 && numel( betas ) > 1  % epsilon-beta-map
 
-		colormap( style.gradient( 64, [1, 1, 1], style.color( 'warm', 0 ) ) );
+		colormap( style.gradient( 64, [1, 1, 1], style.color( 'cold', 0 ) ) );
 
 		subplot( 2, 2, [1, 2] ); % total
 		title( sprintf( 'total funnel (log) (time: %s)', enosc.par2str( times ) ) );

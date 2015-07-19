@@ -70,7 +70,7 @@ classdef (Sealed = true) hStyle < handle
 				% print figure
 			print( plotfile, '-dpng', '-r128' );
 
-			%imwrite( hardcopy( gcf(), '-dzbuffer', '-r120' ), sprintf( '%s.png', plotfile ), 'png' );
+			%imwrite( hardcopy( gcf(), '-dzbuffer', '-r128' ), sprintf( '%s.png', plotfile ), 'png' );
 
 		end
 

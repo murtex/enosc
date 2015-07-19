@@ -32,6 +32,84 @@ classdef hH5C < handle
 		% methods
 	methods (Access = public)
 
+		function mask = mask_funnel( this, times, epsilons, betas, range )
+		% compute funnel mask
+		%
+		% mask = MASK_FUNNEL( this, times, epsilons, betas, range )
+		%
+		% INPUT
+		% this : data container (scalar object)
+		% times : stepping time range (row numeric)
+		% epsilons : epsilon coupling range (row numeric)
+		% betas : beta coupling range (row numeric)
+		% range : funnel range (row numeric)
+		%
+		% OUTPUT
+		% mask : funnel mask (matrix logical)
+
+				% safeguard
+			if nargin < 1 || ~isscalar( this )
+				error( 'invalid argument: this' );
+			end
+
+			if nargin < 2 || (~isempty( times ) && ~isrow( times )) || ~isnumeric( times )
+				error( 'invalid argument: times' );
+			end
+			if isempty( times )
+				times = [this.times(1), this.times(end)];
+			end
+
+			if nargin < 3 || (~isempty( epsilons ) && ~isrow( epsilons )) || ~isnumeric( epsilons )
+				error( 'invalid argument: epsilons' );
+			end
+			if isempty( epsilons )
+				epsilons = [this.epsilons(1), this.epsilons(end)];
+			end
+
+			if nargin < 3 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
+				error( 'invalid argument: betas' );
+			end
+			if isempty( betas )
+				betas = [this.betas(1), this.betas(end)];
+			end
+
+			if nargin < 5 || ~isrow( range ) || numel( range ) ~= 2 || ~isnumeric( range )
+				error( 'invalid argument: range' );
+			end
+
+				% snap parameters
+			[times, itimes] = enosc.parsnap( this.times, times );
+			[epsilons, iepsilons] = enosc.parsnap( this.epsilons, epsilons );
+			[betas, ibetas] = enosc.parsnap( this.betas, betas );
+
+				% read funnel data
+			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.ensemble];
+			mx = double( abs( sum( h5read( this.filename, '/funnel/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+
+			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.meanfield];
+			mf = double( abs( sum( h5read( this.filename, '/funnel/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+
+				% normalize funnel data
+			mxmax = max( mx(:) );
+			if mxmax ~= 0
+				mx = mx / mxmax;
+			end
+			mfmax = max( mf(:) );
+			if mfmax ~= 0
+				mf = mf / mfmax;
+			end
+
+				% compute total funnel
+			total = squeeze( (mx + mf) / 2 );
+
+				% generate mask
+			mask = true( size( total ) );
+			mask(total < range(1) | total > range(2)) = false;
+
+		end
+
 		function this = hH5C( filename )
 		% class constructor
 		%
