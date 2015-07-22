@@ -76,7 +76,7 @@ function plot_detune( h5c, times, epsilons, betas, plotfile, mask )
 	detune = dmfdt ./ dmxdt;
 
 		% plot
-	fig = style.figure( 'Visible', 'on' );
+	fig = style.figure();
 
 	ncols = 64;
 	colormap( style.gradient( ncols, style.color( 'warm', 0 ), style.color( 'cold', 0 ) ) );

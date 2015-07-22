@@ -76,7 +76,7 @@ function plot_order( h5c, times, epsilons, betas, plotfile, mask )
 	order = mf ./ mx;
 
 		% plot
-	fig = style.figure( 'Visible', 'on' );
+	fig = style.figure();
 
 	ncols = 64;
 	colormap( style.gradient( ncols, style.color( 'cold', +2 ), style.color( 'cold', -2 ) ) );
