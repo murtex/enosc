@@ -31,12 +31,12 @@ function h5c = example( datafile, plotdir )
 		% create data container
 	h5c = enosc.hH5C( datafile );
 
-		% plot complete maps
-	mask = h5c.mask_funnel( [], [], [], [0, 0] );
+		% plot some figures
+	mask_funnel = h5c.mask_funnel( [], [], [], [0, 0] ); % mask funnel
+	enosc.fig_order( h5c, [], [], [], fullfile( plotdir, 'order.png' ), mask_funnel );
 
-	%enosc.plot_funnel( h5c, [], [], [], fullfile( plotdir, 'funnel.png' ) );
-	%enosc.plot_order( h5c, [], [], [], fullfile( plotdir, 'order.png' ), mask );
-	enosc.plot_detune( h5c, [], [], [], fullfile( plotdir, 'detune.png' ), mask );
+	mask_order = h5c.mask_order( [], [], [], [0.5, Inf] ); % mask order
+	enosc.fig_detune( h5c, [], [], [], fullfile( plotdir, 'detune.png' ), mask_funnel & mask_order );
 
 		% done
 	logger.untab();

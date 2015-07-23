@@ -186,10 +186,10 @@ classdef (Sealed = true) hStyle < handle
 
 		end
 
-		function cols = gradient( this, n, col1, col2 )
+		function cols = gradient2( this, n, col1, col2 )
 		% get two-color gradient
 		%
-		% cols = GRADIENT( this, n, col1, col2 )
+		% cols = GRADIENT2( this, n, col1, col2 )
 		%
 		% INPUT
 		% this : style (scalar object)
@@ -205,7 +205,7 @@ classdef (Sealed = true) hStyle < handle
 				error( 'invalid argument: this' );
 			end
 
-			if nargin < 2 || ~isscalar( n ) || ~isnumeric( n )
+			if nargin < 2 || ~isscalar( n ) || ~isnumeric( n ) || n < 2
 				error( 'invalid argument: n' );
 			end
 
@@ -224,6 +224,67 @@ classdef (Sealed = true) hStyle < handle
 
 			for i = 1:m
 				cols(:, i) = linspace( col1(i), col2(i), n );
+			end
+
+		end
+
+		function cols = gradient3( this, n, col1, col2, col3 )
+		% get three-color gradient
+		%
+		% cols = GRADIENT3( this, n, col1, col2, col3 )
+		%
+		% INPUT
+		% this : style (scalar object)
+		% n : number of shades (scalar numeric)
+		% col1 : first color (row numeric)
+		% col2 : seconds color (row numeric)
+		% col3 : third color (row numeric)
+		%
+		% OUTPUT
+		% cols : gradient colors (matrix numeric)
+
+				% safeguard
+			if ~isscalar( this )
+				error( 'invalid argument: this' );
+			end
+
+			if nargin < 2 || ~isscalar( n ) || ~isnumeric( n ) || n < 3
+				error( 'invalid argument: n' );
+			end
+
+			if nargin < 3 || ~isrow( col1 ) || ~isnumeric( col1 )
+				error( 'invalid argument: col1' );
+			end
+
+			if nargin < 4 || ~isrow( col2 ) || ~isnumeric( col2 ) || numel( col2 ) ~= numel( col1 )
+				error( 'invalid argument: col2' );
+			end
+
+			if nargin < 5 || ~isrow( col3 ) || ~isnumeric( col3 ) || numel( col3 ) ~= numel( col2 )
+				error( 'invalid argument: col3' );
+			end
+
+				% set gradient colors
+			m = numel( col1 );
+
+			cols = zeros( n, m ); % pre-allocation
+
+			if mod( n, 2 ) == 0 % even number of colors
+				hn = n/2;
+				for i = 1:m
+					tmp = linspace( col1(i), col2(i), hn+1 );
+					cols(1:hn, i) = tmp(1:end-1);
+					tmp = linspace( col2(i), col3(i), hn+1 );
+					cols(hn+1:end, i) = tmp(2:end);
+				end
+			else % odd number
+				n1 = floor( n/2 );
+				n2 = ceil( n/2 );
+				for i = 1:m
+					tmp = linspace( col1(i), col2(i), n1+1 );
+					cols(1:n1, i) = tmp(1:end-1);
+					cols(n1+1:end, i) = linspace( col2(i), col3(i), n2 );
+				end
 			end
 
 		end

@@ -110,6 +110,74 @@ classdef hH5C < handle
 
 		end
 
+		function mask = mask_order( this, times, epsilons, betas, range )
+		% compute order mask
+		%
+		% mask = MASK_ORDER( this, times, epsilons, betas, range )
+		%
+		% INPUT
+		% this : data container (scalar object)
+		% times : stepping time range (row numeric)
+		% epsilons : epsilon coupling range (row numeric)
+		% betas : beta coupling range (row numeric)
+		% range : order range (row numeric)
+		%
+		% OUTPUT
+		% mask : order mask (matrix logical)
+
+				% safeguard
+			if nargin < 1 || ~isscalar( this )
+				error( 'invalid argument: this' );
+			end
+
+			if nargin < 2 || (~isempty( times ) && ~isrow( times )) || ~isnumeric( times )
+				error( 'invalid argument: times' );
+			end
+			if isempty( times )
+				times = [this.times(1), this.times(end)];
+			end
+
+			if nargin < 3 || (~isempty( epsilons ) && ~isrow( epsilons )) || ~isnumeric( epsilons )
+				error( 'invalid argument: epsilons' );
+			end
+			if isempty( epsilons )
+				epsilons = [this.epsilons(1), this.epsilons(end)];
+			end
+
+			if nargin < 3 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
+				error( 'invalid argument: betas' );
+			end
+			if isempty( betas )
+				betas = [this.betas(1), this.betas(end)];
+			end
+
+			if nargin < 5 || ~isrow( range ) || numel( range ) ~= 2 || ~isnumeric( range )
+				error( 'invalid argument: range' );
+			end
+
+				% snap parameters
+			[times, itimes] = enosc.parsnap( this.times, times );
+			[epsilons, iepsilons] = enosc.parsnap( this.epsilons, epsilons );
+			[betas, ibetas] = enosc.parsnap( this.betas, betas );
+
+				% read amplitude data
+			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.ensemble];
+			mx = double( abs( sum( h5read( this.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+
+			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.meanfield];
+			mf = double( abs( sum( h5read( this.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+
+				% compute order
+			order = squeeze( mf ./ mx );
+
+				% generate mask
+			mask = true( size( order ) );
+			mask(order < range(1) | order > range(2)) = false;
+
+		end
+
 		function this = hH5C( filename )
 		% class constructor
 		%
