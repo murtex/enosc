@@ -33,9 +33,23 @@ function plot_map3( label, data, epsilons, betas, cval )
 
 	style = xis.hStyle.instance();
 
+		% DEFAULTS/CONFIG
+	NCOLS = 127;
+
+		% backup previous colorbars
+	hcs = findall( gcf(), 'Tag', 'Colorbar' );
+
+	ylims = zeros( numel( hcs ), 2 );
+	yticks = {};
+
+	for i = 1:numel( hcs )
+		ylims(i, :) = get( hcs(i), 'YLim' );
+		yticks{i} = get( hcs(i), 'YTick' );
+	end
+
 		% extend colormap
 	nprevcols = size( colormap(), 1 );
-	ncols = 127;
+	ncols = NCOLS;
 
 	colormap( cat( 1, colormap(), style.gradient3( ncols, ...
 		style.color( 'cold', 0 ), style.color( 'neutral', +2 ), style.color( 'warm', 0 ) ) ) );
@@ -80,8 +94,24 @@ function plot_map3( label, data, epsilons, betas, cval )
 
 	image( epsilons, betas, data );
 
-		% plot colorbar
-	colorbar();
+		% insert colorbar
+	hc = colorbar();
+
+	ylabel( hc, label );
+	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
+
+	if mod( ncols, 2 ) == 0 % three-point ticks
+		set( hc, 'YTick', nprevcols+[1, (ncols+1)/2, ncols] );
+	else
+		set( hc, 'YTick', nprevcols+[1, ceil( ncols/2 ), ncols] );
+	end
+	set( hc, 'YTickLabel', {num2str( cval-datahw ), num2str( cval ), num2str( cval+datahw )} );
+
+		% restore previous colorbars
+	for i = 1:numel( hcs )
+		set( hcs(i), 'YLim', ylims(i, :) );
+		set( hcs(i), 'YTick', yticks{i} );
+	end
 
 end
 

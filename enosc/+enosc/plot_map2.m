@@ -28,9 +28,23 @@ function plot_map2( label, data, epsilons, betas )
 
 	style = xis.hStyle.instance();
 
+		% DEFAULTS/CONFIG
+	NCOLS = 127;
+
+		% backup previous colorbars
+	hcs = findall( gcf(), 'Tag', 'Colorbar' );
+
+	ylims = zeros( numel( hcs ), 2 );
+	yticks = {};
+
+	for i = 1:numel( hcs )
+		ylims(i, :) = get( hcs(i), 'YLim' );
+		yticks{i} = get( hcs(i), 'YTick' );
+	end
+
 		% extend colormap
 	nprevcols = size( colormap(), 1 );
-	ncols = 127;
+	ncols = NCOLS;
 
 	colormap( cat( 1, colormap(), style.gradient2( ncols, ...
 		style.color( 'neutral', +2 ), style.color( 'cold', 0 ) ) ) );
@@ -59,8 +73,20 @@ function plot_map2( label, data, epsilons, betas )
 
 	image( epsilons, betas, data );
 
-		% plot colorbar
-	colorbar();
+		% insert colorbar
+	hc = colorbar();
+
+	ylabel( hc, label );
+	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
+
+	set( hc, 'YTick', nprevcols+[1, ncols] );
+	set( hc, 'YTickLabel', {num2str( datamin ), num2str( datamax )} );
+
+		% restore previous colorbars
+	for i = 1:numel( hcs )
+		set( hcs(i), 'YLim', ylims(i, :) );
+		set( hcs(i), 'YTick', yticks{i} );
+	end
 
 end
 
