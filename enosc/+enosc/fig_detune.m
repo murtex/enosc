@@ -70,7 +70,7 @@ function plot_detune( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 		% compute detune
-	detune = dmfdt ./ dmxdt;
+	detune = dmfdt - dmxdt;
 
 		% plot
 	fig = style.figure();
@@ -79,7 +79,7 @@ function plot_detune( h5c, times, epsilons, betas, plotfile, mask )
 
 	subplot( 2, 2, [1, 2] );
 	title( sprintf( 'frequency detune (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map3( 'detune', squeeze( detune ), epsilons, betas, 1 );
+	enosc.plot_map3( 'detune', squeeze( detune ), epsilons, betas, 0 );
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble frequency' );
