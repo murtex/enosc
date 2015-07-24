@@ -58,11 +58,12 @@ function plot_order( h5c, times, epsilons, betas, plotfile, mask )
 		% read data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
-	mx = double( mean( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) / h5c.dt );
+	mx = double( mean( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) );
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-	mf = double( mean( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) / h5c.dt );
+	mf = double( mean( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) );
+
 
 	if nargin >= 6 % apply mask
 		mx(~mask) = NaN;

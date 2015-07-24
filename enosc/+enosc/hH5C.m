@@ -163,11 +163,11 @@ classdef hH5C < handle
 				% read amplitude data
 			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.ensemble];
-			mx = double( abs( sum( h5read( this.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+			mx = double( abs( mean( h5read( this.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 			starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 			counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), this.meanfield];
-			mf = double( abs( sum( h5read( this.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+			mf = double( abs( mean( h5read( this.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 				% compute order
 			order = squeeze( mf ./ mx );
