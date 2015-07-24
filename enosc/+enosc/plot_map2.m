@@ -34,12 +34,12 @@ function plot_map2( label, data, epsilons, betas )
 		% backup previous colorbars
 	hcs = findall( gcf(), 'Tag', 'Colorbar' );
 
-	ylims = zeros( numel( hcs ), 2 );
-	yticks = {};
+	prevlims = zeros( numel( hcs ), 2 );
+	prevticks = {};
 
 	for i = 1:numel( hcs )
-		ylims(i, :) = get( hcs(i), 'YLim' );
-		yticks{i} = get( hcs(i), 'YTick' );
+		prevlims(i, :) = get( hcs(i), 'YLim' );
+		prevticks{i} = get( hcs(i), 'YTick' );
 	end
 
 		% extend colormap
@@ -50,8 +50,8 @@ function plot_map2( label, data, epsilons, betas )
 		style.color( 'neutral', +2 ), style.color( 'cold', 0 ) ) ) );
 
 		% rescale data to colors
-	datamin = min( data(:) );
-	datamax = max( data(:) );
+	datamin = min( data(:) )
+	datamax = max( data(:) )
 
 	function val = rescale( val )
 		if isnan( val )
@@ -63,6 +63,12 @@ function plot_map2( label, data, epsilons, betas )
 	end
 
 	data = arrayfun( @rescale, data );
+
+		% prepare colorbar
+	plot( linspace( datamin, datamax, ncols ) ); % let matlab choose optimal ticks and labels
+
+	ticks = get( gca(), 'YTick' );
+	ticklabels = get( gca(), 'YTickLabel' );
 
 		% plot data
 	xlabel( 'epsilon' );
@@ -79,13 +85,13 @@ function plot_map2( label, data, epsilons, betas )
 	ylabel( hc, label );
 	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
 
-	set( hc, 'YTick', nprevcols+[1, ncols] );
-	set( hc, 'YTickLabel', {num2str( datamin ), num2str( datamax )} );
+	set( hc, 'YTick', nprevcols + 1 + (ticks-datamin) / (datamax-datamin) * (ncols-1) );
+	set( hc, 'YTickLabel', ticklabels );
 
 		% restore previous colorbars
 	for i = 1:numel( hcs )
-		set( hcs(i), 'YLim', ylims(i, :) );
-		set( hcs(i), 'YTick', yticks{i} );
+		set( hcs(i), 'YLim', prevlims(i, :) );
+		set( hcs(i), 'YTick', prevticks{i} );
 	end
 
 end

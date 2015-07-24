@@ -39,12 +39,12 @@ function plot_map3( label, data, epsilons, betas, cval )
 		% backup previous colorbars
 	hcs = findall( gcf(), 'Tag', 'Colorbar' );
 
-	ylims = zeros( numel( hcs ), 2 );
-	yticks = {};
+	prevlims = zeros( numel( hcs ), 2 );
+	prevticks = {};
 
 	for i = 1:numel( hcs )
-		ylims(i, :) = get( hcs(i), 'YLim' );
-		yticks{i} = get( hcs(i), 'YTick' );
+		prevlims(i, :) = get( hcs(i), 'YLim' );
+		prevticks{i} = get( hcs(i), 'YTick' );
 	end
 
 		% extend colormap
@@ -85,6 +85,12 @@ function plot_map3( label, data, epsilons, betas, cval )
 
 	data = arrayfun( @rescale, data );
 
+		% prepare colorbar
+	plot( linspace( cval-datahw, cval+datahw, ncols ) ); % let matlab choose optimal ticks and labels
+
+	ticks = get( gca(), 'YTick' );
+	ticklabels = get( gca(), 'YTickLabel' );
+
 		% plot data
 	xlabel( 'epsilon' );
 	ylabel( 'beta' );
@@ -93,24 +99,20 @@ function plot_map3( label, data, epsilons, betas, cval )
 	ylim( [min( betas ), max( betas )] );
 
 	image( epsilons, betas, data );
-
+		
 		% insert colorbar
 	hc = colorbar();
 
 	ylabel( hc, label );
 	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
 
-	if mod( ncols, 2 ) == 0 % three-point ticks
-		set( hc, 'YTick', nprevcols+[1, (ncols+1)/2, ncols] );
-	else
-		set( hc, 'YTick', nprevcols+[1, ceil( ncols/2 ), ncols] );
-	end
-	set( hc, 'YTickLabel', {num2str( cval-datahw ), num2str( cval ), num2str( cval+datahw )} );
+	set( hc, 'YTick', nprevcols + 1 + (ticks-cval+datahw) / (2*datahw) * (ncols-1) );
+	set( hc, 'YTickLabel', ticklabels );
 
 		% restore previous colorbars
 	for i = 1:numel( hcs )
-		set( hcs(i), 'YLim', ylims(i, :) );
-		set( hcs(i), 'YTick', yticks{i} );
+		set( hcs(i), 'YLim', prevlims(i, :) );
+		set( hcs(i), 'YTick', prevticks{i} );
 	end
 
 end
