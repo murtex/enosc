@@ -33,9 +33,6 @@ function plot_map3( label, data, epsilons, betas, cval )
 
 	style = xis.hStyle.instance();
 
-		% DEFAULTS/CONFIG
-	NCOLS = 127;
-
 		% backup previous colorbars
 	hcs = findall( gcf(), 'Tag', 'Colorbar' );
 
@@ -49,7 +46,7 @@ function plot_map3( label, data, epsilons, betas, cval )
 
 		% extend colormap
 	nprevcols = size( colormap(), 1 );
-	ncols = NCOLS;
+	ncols = 127;
 
 	colormap( cat( 1, colormap(), style.gradient3( ncols, ...
 		style.color( 'cold', 0 ), style.color( 'neutral', +2 ), style.color( 'warm', 0 ) ) ) );

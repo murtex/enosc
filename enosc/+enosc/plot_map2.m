@@ -28,9 +28,6 @@ function plot_map2( label, data, epsilons, betas )
 
 	style = xis.hStyle.instance();
 
-		% DEFAULTS/CONFIG
-	NCOLS = 127;
-
 		% backup previous colorbars
 	hcs = findall( gcf(), 'Tag', 'Colorbar' );
 
@@ -44,14 +41,14 @@ function plot_map2( label, data, epsilons, betas )
 
 		% extend colormap
 	nprevcols = size( colormap(), 1 );
-	ncols = NCOLS;
+	ncols = 127;
 
 	colormap( cat( 1, colormap(), style.gradient2( ncols, ...
 		style.color( 'neutral', +2 ), style.color( 'cold', 0 ) ) ) );
 
 		% rescale data to colors
-	datamin = min( data(:) )
-	datamax = max( data(:) )
+	datamin = min( data(:) );
+	datamax = max( data(:) );
 
 	function val = rescale( val )
 		if isnan( val )
