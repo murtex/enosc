@@ -1,7 +1,7 @@
-function plot_detune( h5c, times, epsilons, betas, plotfile, mask )
+function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 % plot frequency detune
 %
-% PLOT_DETUNE( h5c, times, epsilons, betas, plotfile, mask=true )
+% FIG_DETUNE( h5c, times, epsilons, betas, plotfile, mask=true )
 %
 % INPUT
 % h5c : data container (scalar object)

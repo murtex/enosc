@@ -1,7 +1,7 @@
-function fig_order( h5c, times, epsilons, betas, plotfile, mask )
-% plot synchronization order
+function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
+% plot funnel indicator
 %
-% FIG_ORDER( h5c, times, epsilons, betas, plotfile, mask=true )
+% FIG_FUNNEL( h5c, times, epsilons, betas, plotfile, mask=true )
 %
 % INPUT
 % h5c : data container (scalar object)
@@ -46,7 +46,7 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot synchronization order (''%s'')...', plotfile );
+	logger.tab( 'plot funnel indicator (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -55,22 +55,32 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 	[epsilons, iepsilons] = enosc.parsnap( h5c.epsilons, epsilons );
 	[betas, ibetas] = enosc.parsnap( h5c.betas, betas );
 
-		% read data
+		% read funnel data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
-	mx = double( mean( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) );
+	mx = double( abs( sum( h5read( h5c.filename, '/funnel/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-	mf = double( mean( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) );
+	mf = double( abs( sum( h5read( h5c.filename, '/funnel/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 	if nargin >= 6 % apply mask
 		mx(~mask) = NaN;
 		mf(~mask) = NaN;
 	end
 
-		% compute order
-	order = mf ./ mx;
+		% normalize funnel data
+	mxmax = max( mx(:) );
+	if mxmax ~= 0
+		mx = mx / mxmax;
+	end
+	mfmax = max( mf(:) );
+	if mfmax ~= 0
+		mf = mf / mfmax;
+	end
+
+		% compute total funnel
+	total = squeeze( (mx + mf) / 2 );
 
 		% plot
 	fig = style.figure();
@@ -78,16 +88,16 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 
 	subplot( 2, 2, [1, 2] );
-	title( sprintf( 'synchronization order (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map2( 'order', squeeze( order ), epsilons, betas );
+	title( sprintf( 'funnel indicator (time: %s)', enosc.par2str( times ) ) );
+	enosc.plot_map2( 'funnel', squeeze( total ), epsilons, betas );
 
 	subplot( 2, 2, 3 );
-	title( 'ensemble amplitude' );
-	enosc.plot_map2( 'amplitude', squeeze( mx ), epsilons, betas );
+	title( 'ensemble funnel' );
+	enosc.plot_map2( 'funnel', squeeze( mx ), epsilons, betas );
 	
 	subplot( 2, 2, 4 );
-	title( 'meanfield amplitude' );
-	enosc.plot_map2( 'amplitude', squeeze( mf ), epsilons, betas );
+	title( 'meanfield funnel' );
+	enosc.plot_map2( 'funnel', squeeze( mf ), epsilons, betas );
 
 		% done
 	style.print( plotfile );
