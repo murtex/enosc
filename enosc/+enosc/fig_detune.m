@@ -70,7 +70,7 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 		% compute detune
-	detune = dmfdt - dmxdt;
+	detune = dmfdt ./ dmxdt - 1;
 
 		% plot
 	fig = style.figure();
