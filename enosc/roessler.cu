@@ -20,9 +20,9 @@ enosc::Roessler::Roessler()
 		/* initialize configuration */
 	_dim = 3;
 
-	_a = 0.15;
-	_b = 0.4;
-	_c = 8.5;
+	_a = 0.2;
+	_b = 0.2;
+	_c = 5.7;
 
 }
 
