@@ -67,10 +67,27 @@ classdef (Sealed = true) hStyle < handle
 				error( 'invalid argument: plotfile' );
 			end
 
-				% print figure
-			print( plotfile, '-dpng', '-r128' );
+				% get graphic format from filename
+			[~, ~, ext] = fileparts( plotfile );
 
-			%imwrite( hardcopy( gcf(), '-dzbuffer', '-r128' ), sprintf( '%s.png', plotfile ), 'png' );
+			switch lower( ext )
+
+				case '.png' % bitmaps
+					formatopts = {'-dpng', '-r128'};
+				case '.jpg'
+					formatopts = {'-djpeg', '-r128'};
+
+				case '.eps' % vectors
+					formatopts = {'-depsc2'};
+				case '.pdf'
+					formatopts = {'-dpdf'};
+
+				otherwise
+					error( 'invalid argument: ext' );
+			end
+
+				% print figure
+			print( plotfile, formatopts{:} );
 
 		end
 
