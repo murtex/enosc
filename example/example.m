@@ -16,17 +16,16 @@ function h5c = example( datafile, plotdir )
 		error( 'invalid argument: plotdir' );
 	end
 
+	if exist( plotdir, 'dir' ) ~= 7 % prepare output directory
+		mkdir( plotdir );
+	end
+
 		% initialize framework
 	addpath( '../xis/' );
 	addpath( '../enosc/' );
 
 	logger = xis.hLogger.instance( 'example.m.log' );
 	logger.tab( 'plot examples...' );
-
-		% prepare plot directory
-	if exist( plotdir, 'dir' ) ~= 7
-		mkdir( plotdir );
-	end
 
 		% create data container
 	h5c = enosc.hH5C( datafile );
