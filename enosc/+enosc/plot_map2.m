@@ -80,7 +80,7 @@ function plot_map2( label, data, epsilons, betas )
 	hc = colorbar();
 
 	ylabel( hc, label );
-	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
+	ylim( hc, [nprevcols+1, nprevcols+ncols] );
 
 	set( hc, 'YTick', nprevcols + 1 + (ticks-datamin) / (datamax-datamin) * (ncols-1) );
 	set( hc, 'YTickLabel', ticklabels );

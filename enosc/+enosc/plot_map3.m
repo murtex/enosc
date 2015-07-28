@@ -101,7 +101,7 @@ function plot_map3( label, data, epsilons, betas, cval )
 	hc = colorbar();
 
 	ylabel( hc, label );
-	ylim( hc, [nprevcols+0.5, nprevcols+0.5+ncols] );
+	ylim( hc, [nprevcols+1, nprevcols+ncols] );
 
 	set( hc, 'YTick', nprevcols + 1 + (ticks-cval+datahw) / (2*datahw) * (ncols-1) );
 	set( hc, 'YTickLabel', ticklabels );
