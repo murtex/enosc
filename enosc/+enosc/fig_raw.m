@@ -68,7 +68,7 @@ function fig_raw( h5c, times, epsilons, betas, plotfile )
 	title( sprintf( 'raw trajectory (time: %s, epsilon: %s, beta: %s)', ...
 		enosc.par2str( times ), enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
-	%view( 30, 35 );
+	view( 30, 35 );
 
 	plot3( x(1, :), x(2, :), x(3, :), ...
 		'Color', style.color( 'cold', 0 ) );
