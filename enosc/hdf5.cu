@@ -182,10 +182,6 @@ void enosc::HDF5::init( enosc::Ensemble const & ensemble, enosc::Stepper const &
 void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc::scalar time )
 {
 
-		/* skip transition phase */
-	if ( step < _transition )
-		return;
-
 		/* prepare buffers */
 	enosc::device_vector & state = ensemble.get_state();
 	enosc::device_vector const & state_next = ensemble.get_state_next();
@@ -195,7 +191,22 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 
 	enosc::device_vector & mean = ensemble.get_mean();
 
-		/* raw oscillators */
+		/* update ensemble center (transition phase) */
+	if ( step < _transition ) {
+		if ( _centering ) {
+			ensemble.compute_mean( state );
+
+			thrust::transform(
+				_center.begin(), _center.end(),
+				thrust::make_transform_iterator(
+					mean.begin(), thrust::placeholders::_1 / _transition ),
+				_center.begin(), thrust::plus< enosc::scalar >() );
+		}
+
+		return;
+	}
+
+		/* write raw oscillators */
 	hsize_t dims_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), ensemble.get_size()};
 	hsize_t starts_in[4] = {0, 0, 0, 0};
 	hsize_t counts_in[4] = {ensemble.get_dim(), ensemble.get_epsilons().size(), ensemble.get_betas().size(), (hsize_t) (_oscillator ? 1 : 0) * (_track_raw ? 1 : 0)};
@@ -209,13 +220,14 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 
 	_raw_x.write( enosc::host_vector( state.begin(), state.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-	thrust::transform(
+	thrust::transform( /* compute derivative */
 		state_next.begin(), state_next.end(),
 		state.begin(),
 		deriv.begin(), thrust::minus< enosc::scalar >() );
+
 	_raw_dxdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* polar oscillators */
+		/* write polar oscillators */
 	dims_in[0] = 2;
 	counts_in[0] = 2;
 	counts_in[3] = (_oscillator ? 1 : 0) * (_track_polar ? 1 : 0);
@@ -227,11 +239,21 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _polar_x.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
+	if ( _centering ) /* center ensemble */
+		thrust::transform(
+			state.begin(), state.end(),
+			thrust::make_permutation_iterator(
+				_center.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 / ensemble.get_size() ) ),
+	        state.begin(), thrust::minus< enosc::scalar >() );
+
 	ensemble.compute_polar( state, deriv );
 	_polar_x.write( enosc::host_vector( polar.begin(), polar.end() ).data(), _datatype, dataspace_in, dataspace_out );
 	_polar_dxdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* mean funnel */
+		/* write mean funnel */
 	dims_in[0] = 1;
 	dims_in[3] = 1;
 	counts_in[0] = 1;
@@ -247,7 +269,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	compute_funnel( deriv, ensemble.get_size() );
 	_funnel_mx.write( enosc::host_vector( _funnel.begin(), _funnel.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* polar mean */
+		/* write polar mean */
 	dims_in[0] = 2;
 	counts_in[0] = 2;
 	counts_in[3] = (_ensemble ? 1 : 0) * (_track_polar ? 1 : 0);
@@ -265,7 +287,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	ensemble.compute_mean( deriv );
 	_polar_dmxdt.write( enosc::host_vector( mean.begin(), mean.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* raw mean (raw meanfield) */
+		/* write raw mean (raw meanfield) */
 	dims_in[0] = ensemble.get_dim();
 	counts_in[0] = ensemble.get_dim();
 	counts_in[3] = (_ensemble ? 1 : 0) * (_track_raw ? 1 : 0);
@@ -277,18 +299,29 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _raw_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
+	if ( _centering ) /* un-center ensemble */
+		thrust::transform(
+			state.begin(), state.end(),
+			thrust::make_permutation_iterator(
+				_center.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 / ensemble.get_size() ) ),
+	        state.begin(), thrust::plus< enosc::scalar >() );
+
 	ensemble.compute_mean( state );
 	_raw_mx.write( enosc::host_vector( mean.begin(), mean.end() ).data(), _datatype, dataspace_in, dataspace_out );
-	thrust::copy( mean.begin(), mean.end(), state.begin() ); /* keep a copy of raw mx */
+	thrust::copy( mean.begin(), mean.end(), _tmp.begin() ); /* keep a backup of raw-mx */
 
-	thrust::transform(
+	thrust::transform( /* re-compute derivative */
 		state_next.begin(), state_next.end(),
 		state.begin(),
 		deriv.begin(), thrust::minus< enosc::scalar >() );
+
 	ensemble.compute_mean( deriv );
 	_raw_dmxdt.write( enosc::host_vector( mean.begin(), mean.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* polar meanfield */
+		/* write polar meanfield */
 	dims_in[0] = 2;
 	counts_in[0] = 2;
 	counts_in[3] = (_meanfield ? 1 : 0) * (_track_polar ? 1 : 0);
@@ -300,11 +333,17 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _polar_mf.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	ensemble.compute_polar( state, mean ); /* use backup copy of raw mx */
+	if ( _centering ) /* re-center meanfield */
+		thrust::transform(
+			_tmp.begin(), _tmp.end(),
+			_center.begin(),
+	        _tmp.begin(), thrust::minus< enosc::scalar >() );
+
+	ensemble.compute_polar( _tmp, mean ); /* use backup of raw-mx */
 	_polar_mf.write( enosc::host_vector( polar.begin(), polar.end() ).data(), _datatype, dataspace_in, dataspace_out );
 	_polar_dmfdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 
-		/* meanfield funnel */
+		/* write meanfield funnel */
 	dims_in[0] = 1;
 	dims_in[3] = 1;
 	counts_in[0] = 1;

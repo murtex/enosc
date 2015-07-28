@@ -24,6 +24,8 @@ enosc::Observer::Observer()
 
 	_transition = 0; /* tracking */
 
+	_centering = true;
+
 	_track_raw = true;
 	_track_polar = true;
 	_track_funnel = true;
@@ -55,6 +57,10 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _transition );
 
+	settingname = groupname + "/centering";
+	if ( config.exists( settingname ) )
+		config.lookupValue( settingname, _centering );
+
 	settingname = groupname + "/track_raw";
 	if ( config.exists( settingname ) )
 		config.lookupValue( settingname, _track_raw );
@@ -75,6 +81,7 @@ void enosc::Observer::configure( libconfig::Config const & config, std::string c
 	logger.log() << "meanfield: " << _meanfield << "\n";
 
 	logger.log() << "transition: " << _transition << "\n";
+	logger.log() << "centering: " << _centering << "\n";
 	logger.log() << "track_raw: " << _track_raw << "\n";
 	logger.log() << "track_polar: " << _track_polar << "\n";
 	logger.log() << "track_funnel: " << _track_funnel << "\n";
@@ -93,7 +100,9 @@ void enosc::Observer::init( enosc::Ensemble const & ensemble, enosc::Stepper con
 		throw std::runtime_error( "invalid value (enosc::Observer::init): _transition" );
 
 		/* prepare buffers */
-	_funnel.resize( ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* funneling */
+	_center.resize( ensemble.get_dim() * ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* ensemble center */
+	_funnel.resize( ensemble.get_epsilons().size() * ensemble.get_betas().size() ); /* funnel indicator */
+	_tmp.resize( _center.size() ); /* temporary buffer */
 
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();

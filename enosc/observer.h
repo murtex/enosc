@@ -37,6 +37,8 @@ namespace enosc
 
 			unsigned int _transition; /* tracking */
 
+			bool _centering;
+
 			bool _track_raw;
 			bool _track_polar;
 			bool _track_funnel;
@@ -48,7 +50,9 @@ namespace enosc
 			/* observation */
 		protected:
 
-			enosc::device_vector _funnel; /* funneling */
+			enosc::device_vector _center; /* ensemble center */
+			enosc::device_vector _funnel; /* funnel indicator */
+			enosc::device_vector _tmp; /* temporary buffer */
 
 		public:
 
