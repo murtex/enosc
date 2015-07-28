@@ -27,15 +27,20 @@ function h5c = example( datafile, plotdir )
 	logger = xis.hLogger.instance( 'example.m.log' );
 	logger.tab( 'plot examples...' );
 
-		% create data container
+		% read data
 	h5c = enosc.hH5C( datafile );
 
 		% plot some figures
-	mask_funnel = h5c.mask_funnel( [], [], [], [0, 0] ); % mask funnel
+	enosc.fig_funnel( h5c, [], [], [], fullfile( plotdir, 'funnel.png' ) );
+
+	mask_funnel = h5c.mask_funnel( [], [], [], [-Inf, Inf] );
 	enosc.fig_order( h5c, [], [], [], fullfile( plotdir, 'order.png' ), mask_funnel );
 
-	mask_order = h5c.mask_order( [], [], [], [0.5, Inf] ); % mask order
+	mask_order = h5c.mask_order( [], [], [], [-Inf, Inf] );
 	enosc.fig_detune( h5c, [], [], [], fullfile( plotdir, 'detune.png' ), mask_funnel & mask_order );
+
+	enosc.fig_raw( h5c, [], 0.004, 0.0, fullfile( plotdir, 'raw0.png' ) );
+	enosc.fig_raw( h5c, [], 0.015, 0.4, fullfile( plotdir, 'raw1.png' ) );
 
 		% done
 	logger.untab();
