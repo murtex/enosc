@@ -69,18 +69,22 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 		mf(~mask) = NaN;
 	end
 
-		% normalize funnel data
-	mxmax = max( mx(:) );
-	if mxmax ~= 0
-		mx = mx / mxmax;
-	end
-	mfmax = max( mf(:) );
-	if mfmax ~= 0
-		mf = mf / mfmax;
-	end
+	%mxmax = max( mx(:) ); % normalization
+	%if mxmax ~= 0
+		%mx = mx / mxmax;
+	%end
+	%mfmax = max( mf(:) );
+	%if mfmax ~= 0
+		%mf = mf / mfmax;
+	%end
 
 		% compute total funnel
-	total = squeeze( (mx + mf) / 2 );
+	total = mx + mf;
+
+	%totalmax = max( total(:) ); % normalization
+	%if totalmax ~= 0
+		%total = total / totalmax;
+	%end
 
 		% plot
 	fig = style.figure();
