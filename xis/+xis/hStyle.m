@@ -78,7 +78,7 @@ classdef (Sealed = true) hStyle < handle
 					formatopts = {'-djpeg', '-r128'};
 
 				case '.eps' % vectors
-					formatopts = {'-depsc2'};
+					formatopts = {'-depsc2', '-loose'};
 				case '.pdf'
 					formatopts = {'-dpdf'};
 
