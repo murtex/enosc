@@ -67,8 +67,8 @@ classdef (Sealed = true) hStyle < handle
 				error( 'invalid argument: plotfile' );
 			end
 
-				% get graphic format from filename
-			[~, ~, ext] = fileparts( plotfile );
+				% get output format from filename
+			[~, name, ext] = fileparts( plotfile );
 
 			switch lower( ext )
 
