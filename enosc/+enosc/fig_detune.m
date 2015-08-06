@@ -79,7 +79,12 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 
 	subplot( 2, 2, [1, 2] );
 	title( sprintf( 'frequency detune (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map3( 'detune', squeeze( detune ), epsilons, betas, 0 );
+	cval = 0;
+	if cval >= min( detune(:) ) && cval <= max( detune(:) )
+		enosc.plot_map3( 'detune', squeeze( detune ), epsilons, betas, cval );
+	else
+		enosc.plot_map2( 'detune', squeeze( detune ), epsilons, betas );
+	end
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble frequency' );

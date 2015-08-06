@@ -62,7 +62,7 @@ function plot_map2( label, data, epsilons, betas )
 	data = arrayfun( @rescale, data );
 
 		% prepare colorbar
-	plot( linspace( datamin, datamax, ncols ) ); % let matlab choose optimal ticks and labels
+	plot( linspace( datamin, datamax, ncols ) ); % let matlab choose optimal ticks and labels, TODO: exponetial scale factor!
 
 	ticks = get( gca(), 'YTick' );
 	ticklabels = get( gca(), 'YTickLabel' );
