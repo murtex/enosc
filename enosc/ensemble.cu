@@ -49,8 +49,10 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 			/* set parameter values */
 		_epsilons.resize( steps+1 );
 		_epsilons[0] = start;
-		for ( unsigned int i = 1; i < steps+1; ++i )
+		for ( unsigned int i = 1; i < steps; ++i )
 			_epsilons[i] = start + i * (stop-start) / (enosc::scalar) steps;
+		if ( steps >= 1 )
+			_epsilons[steps] = stop;
 
 	}
 
@@ -67,8 +69,10 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 			/* set parameter values */
 		_betas.resize( steps+1 );
 		_betas[0] = start;
-		for ( unsigned int i = 1; i < steps+1; ++i )
+		for ( unsigned int i = 1; i < steps; ++i )
 			_betas[i] = start + i * (stop-start) / (enosc::scalar) steps;
+		if ( steps >= 1 )
+			_betas[steps] = stop;
 
 	}
 

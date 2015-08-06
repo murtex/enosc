@@ -37,8 +37,10 @@ void enosc::Stepper::configure( libconfig::Config const & config, std::string co
 			/* set parameter values */
 		_times.resize( steps+1 );
 		_times[0] = start;
-		for ( unsigned int i = 1; i < steps+1; ++i )
+		for ( unsigned int i = 1; i < steps; ++i )
 			_times[i] = start + i * (stop-start) / (enosc::scalar) steps;
+		if ( steps >= 1 )
+			_times[steps] = stop;
 
 		if ( _times.size() > 1 )
 			_dt = _times[1] - _times[0];
