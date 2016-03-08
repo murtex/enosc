@@ -44,7 +44,7 @@ void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 			state_next.begin(),
 			thrust::plus< enosc::scalar >() );
 
-	if ( ensemble.compute_deriv_stoch( state, _times[step], _random ) ) /* stochastic component, TODO: zero randomness! */
+	if ( ensemble.compute_deriv_stoch( state, _times[step], _random ) ) /* stochastic component */
 		thrust::transform(
 			state_next.begin(), state_next.end(),
 			thrust::make_transform_iterator(
