@@ -15,12 +15,15 @@
 #include <enosc/ensemble.h>
 #include <enosc/roessler.h>
 #include <enosc/roessler_mod.h>
+#include <enosc/sakaguchi.h>
+#include <enosc/sakaguchi_add.h>
 
 #include <enosc/observer.h>
 #include <enosc/hdf5.h>
 
 #include <enosc/stepper.h>
 #include <enosc/euler.h>
+#include <enosc/heun.h>
 
 	/* command line */
 char const * _cl_config = NULL;
@@ -95,6 +98,8 @@ void init()
 
 	fac_ensemble.enroll< enosc::Roessler >( "roessler" );
 	fac_ensemble.enroll< enosc::RoesslerMod >( "roessler-mod" );
+	fac_ensemble.enroll< enosc::Sakaguchi >( "sakaguchi" );
+	fac_ensemble.enroll< enosc::SakaguchiAdd >( "sakaguchi-add" );
 
 	std::string ensemble = _config.lookup( "ensemble/type" ); /* creation */
 	_logger.tab() << "create ensemble (" << ensemble << ")...\n";
@@ -109,6 +114,7 @@ void init()
 	xis::Factory< enosc::Stepper > fac_stepper; /* registration */
 
 	fac_stepper.enroll< enosc::Euler >( "euler" );
+	fac_stepper.enroll< enosc::Heun >( "heun" );
 
 	std::string stepper = _config.lookup( "stepper/type" ); /* creation */
 	_logger.tab() << "create stepper (" << stepper << ")...\n";
