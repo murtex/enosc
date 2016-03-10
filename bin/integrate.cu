@@ -17,6 +17,7 @@
 #include <enosc/roessler_mod.h>
 #include <enosc/sakaguchi.h>
 #include <enosc/sakaguchi_add.h>
+#include <enosc/sakaguchi_mul.h>
 
 #include <enosc/observer.h>
 #include <enosc/hdf5.h>
@@ -100,6 +101,7 @@ void init()
 	fac_ensemble.enroll< enosc::RoesslerMod >( "roessler-mod" );
 	fac_ensemble.enroll< enosc::Sakaguchi >( "sakaguchi" );
 	fac_ensemble.enroll< enosc::SakaguchiAdd >( "sakaguchi-add" );
+	fac_ensemble.enroll< enosc::SakaguchiMul >( "sakaguchi-mul" );
 
 	std::string ensemble = _config.lookup( "ensemble/type" ); /* creation */
 	_logger.tab() << "create ensemble (" << ensemble << ")...\n";
