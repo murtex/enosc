@@ -34,6 +34,7 @@ namespace enosc
 
 			enosc::device_vector _tmp1; /* temporary buffers */
 			enosc::device_vector _tmp2;
+			enosc::device_vector _tmp3;
 
 		public:
 

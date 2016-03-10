@@ -32,7 +32,7 @@ void enosc::Euler::init( enosc::Ensemble const & ensemble )
 void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 {
 
-		/* evolve state */
+		/* prepare variables */
 	unsigned int const dim = ensemble.get_dim();
 	unsigned int const size = ensemble.get_size();
 	unsigned int const epsilons = ensemble.get_epsilons().size();
@@ -41,20 +41,25 @@ void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 	enosc::device_vector const & state = ensemble.get_state();
 	enosc::device_vector const & deriv = ensemble.get_deriv();
 
-	enosc::device_vector & state_next = ensemble.get_state_next();
-	state_next = state;
+	enosc::device_vector & next = ensemble.get_state_next();
 
-	if ( ensemble.compute_deriv_det( state, _times[step] ) ) /* deterministic component */
+		/* evolve state */
+	next = state;
+
+	bool fdet = ensemble.compute_deriv_det( state, _times[step] ); /* deterministic part */
+	if ( fdet )
 		thrust::transform(
-			state_next.begin(), state_next.end(),
+			next.begin(), next.end(),
 			thrust::make_transform_iterator(
-				deriv.begin(), thrust::placeholders::_1 * _dt ),
-			state_next.begin(),
+				deriv.begin(),
+				thrust::placeholders::_1 * _dt ),
+			next.begin(),
 			thrust::plus< enosc::scalar >() );
 
-	if ( ensemble.compute_deriv_stoch( state, _times[step] ) ) { /* stochastic component */
+	bool fstoch = ensemble.compute_deriv_stoch( state, _times[step] ); /* stochastic part */
+	if ( fstoch ) {
 
-			/* (re-)randomize */
+			/* prepare randomness */
         for ( auto it = _hrandom.begin(); it != _hrandom.end(); ++it )
 			*it = (*_rnd)( _rng );
 
@@ -68,7 +73,7 @@ void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 				epsilons * betas * size,
 				_drandom.begin() + i * epsilons * betas * size );
 
-			/* evolve */
+			/* update next state */
         thrust::transform(
 			deriv.begin(), deriv.end(),
 			_drandom.begin(),
@@ -76,9 +81,9 @@ void enosc::Euler::integrate( enosc::Ensemble & ensemble, unsigned int step )
 			thrust::multiplies< enosc::scalar >() );
 
 		thrust::transform(
-			state_next.begin(), state_next.end(),
+			next.begin(), next.end(),
 			_drandom.begin(),
-			state_next.begin(),
+			next.begin(),
             thrust::plus< enosc::scalar >() );
 
 	}
