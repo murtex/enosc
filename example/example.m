@@ -39,8 +39,15 @@ function h5c = example( datafile, plotdir )
 	mask_order = h5c.mask_order( [], [], [], [-Inf, Inf] );
 	enosc.fig_detune( h5c, [], [], [], fullfile( plotdir, 'detune.png' ), mask_funnel & mask_order );
 
-	enosc.fig_raw( h5c, [], 0.004, 0.0, fullfile( plotdir, 'raw0.png' ) );
-	enosc.fig_raw( h5c, [], 0.015, 0.4, fullfile( plotdir, 'raw1.png' ) );
+	enosc.fig_raw( h5c, [], 0.000, 0.0, true, fullfile( plotdir, 'raw0.png' ) );
+	enosc.fig_raw( h5c, [], 0.004, 0.0, true, fullfile( plotdir, 'raw1.png' ) );
+	enosc.fig_raw( h5c, [], 0.010, 0.2, true, fullfile( plotdir, 'raw2.png' ) );
+	enosc.fig_raw( h5c, [], 0.016, 0.4, true, fullfile( plotdir, 'raw3.png' ) );
+
+	enosc.fig_polar( h5c, [], 0.000, 0.0, true, fullfile( plotdir, 'polar0.png' ) );
+	enosc.fig_polar( h5c, [], 0.004, 0.0, true, fullfile( plotdir, 'polar1.png' ) );
+	enosc.fig_polar( h5c, [], 0.010, 0.2, true, fullfile( plotdir, 'polar2.png' ) );
+	enosc.fig_polar( h5c, [], 0.016, 0.4, true, fullfile( plotdir, 'polar3.png' ) );
 
 		% done
 	logger.untab();
