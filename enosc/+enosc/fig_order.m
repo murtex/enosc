@@ -79,15 +79,15 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 
 	subplot( 2, 2, [1, 2] );
 	title( sprintf( 'synchronization order (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map2( 'order', squeeze( order ), epsilons, betas );
+	enosc.plot_map2( squeeze( order ), epsilons, betas );
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble amplitude' );
-	enosc.plot_map2( 'amplitude', squeeze( mx ), epsilons, betas );
+	enosc.plot_map2( squeeze( mx ), epsilons, betas );
 	
 	subplot( 2, 2, 4 );
 	title( 'meanfield amplitude' );
-	enosc.plot_map2( 'amplitude', squeeze( mf ), epsilons, betas );
+	enosc.plot_map2( squeeze( mf ), epsilons, betas );
 
 		% done
 	style.print( plotfile );

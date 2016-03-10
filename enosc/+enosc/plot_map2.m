@@ -1,28 +1,23 @@
-function plot_map2( label, data, epsilons, betas )
+function plot_map2( data, epsilons, betas )
 % plot two-color gradient map
 %
-% PLOT_MAP2( label, data, epsilons, betas )
+% PLOT_MAP2( data, epsilons, betas )
 %
 % INPUT
-% label : map label (row char)
 % data : map data (matrix numeric)
 % epsilons : epsilon coupling values (row numeric)
 % betas : beta coupling values (row numeric)
 
 		% safeguard
-	if nargin < 1 || ~isrow( label ) || ~ischar( label )
-		error( 'invalid argument: label' );
-	end
-
-	if nargin < 2 || ~ismatrix( data ) || ~isnumeric( data )
+	if nargin < 1 || ~ismatrix( data ) || ~isnumeric( data )
 		error( 'invalid argument: data' );
 	end
 
-	if nargin < 3 || ~isrow( epsilons ) || ~isnumeric( epsilons ) || numel( epsilons ) ~= size( data, 2 )
+	if nargin < 2 || ~isrow( epsilons ) || ~isnumeric( epsilons ) || numel( epsilons ) ~= size( data, 2 )
 		error( 'invalid argument: epsilons' );
 	end
 
-	if nargin < 4 || ~isrow( betas ) || ~isnumeric( betas ) || numel( betas ) ~= size( data, 1 )
+	if nargin < 3 || ~isrow( betas ) || ~isnumeric( betas ) || numel( betas ) ~= size( data, 1 )
 		error( 'invalid argument: betas' );
 	end
 
@@ -49,12 +44,13 @@ function plot_map2( label, data, epsilons, betas )
 		% rescale data to colors
 	datamin = min( data(:) );
 	datamax = max( data(:) );
+	datadiff = max( eps, datamax-datamin );
 
 	function val = rescale( val )
 		if isnan( val )
 			val = 1;
 		else
-			col = round( (val-datamin) / (datamax-datamin) * (ncols-1) );
+			col = round( (val-datamin) / datadiff * (ncols-1) );
 			val = nprevcols + col+1;
 		end
 	end
@@ -79,10 +75,9 @@ function plot_map2( label, data, epsilons, betas )
 		% insert colorbar
 	hc = colorbar();
 
-	ylabel( hc, label );
 	ylim( hc, [nprevcols+1, nprevcols+ncols] );
 
-	set( hc, 'YTick', nprevcols + 1 + (ticks-datamin) / (datamax-datamin) * (ncols-1) );
+	set( hc, 'YTick', nprevcols + 1 + (ticks-datamin) / datadiff * (ncols-1) );
 	set( hc, 'YTickLabel', ticklabels );
 
 		% restore previous colorbars

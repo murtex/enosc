@@ -1,33 +1,28 @@
-function plot_map3( label, data, epsilons, betas, cval )
+function plot_map3( data, epsilons, betas, cval )
 % plot three-color gradient map
 %
-% PLOT_MAP3( label, data, epsilons, betas, cval )
+% PLOT_MAP3( data, epsilons, betas, cval )
 %
 % INPUT
-% label : map label (row char)
 % data : map data (matrix numeric)
 % epsilons : epsilon coupling values (row numeric)
 % betas : beta coupling values (row numeric)
 % cval : central data value (scalar numeric)
 
 		% safeguard
-	if nargin < 1 || ~isrow( label ) || ~ischar( label )
-		error( 'invalid argument: label' );
-	end
-
-	if nargin < 2 || ~ismatrix( data ) || ~isnumeric( data )
+	if nargin < 1 || ~ismatrix( data ) || ~isnumeric( data )
 		error( 'invalid argument: data' );
 	end
 
-	if nargin < 3 || ~isrow( epsilons ) || ~isnumeric( epsilons ) || numel( epsilons ) ~= size( data, 2 )
+	if nargin < 2 || ~isrow( epsilons ) || ~isnumeric( epsilons ) || numel( epsilons ) ~= size( data, 2 )
 		error( 'invalid argument: epsilons' );
 	end
 
-	if nargin < 4 || ~isrow( betas ) || ~isnumeric( betas ) || numel( betas ) ~= size( data, 1 )
+	if nargin < 3 || ~isrow( betas ) || ~isnumeric( betas ) || numel( betas ) ~= size( data, 1 )
 		error( 'invalid argument: betas' );
 	end
 
-	if nargin < 5 || ~isscalar( cval ) || ~isnumeric( cval )
+	if nargin < 4 || ~isscalar( cval ) || ~isnumeric( cval )
 		error( 'invalid argument: cval' );
 	end
 
@@ -100,7 +95,6 @@ function plot_map3( label, data, epsilons, betas, cval )
 		% insert colorbar
 	hc = colorbar();
 
-	ylabel( hc, label );
 	ylim( hc, [nprevcols+1, nprevcols+ncols] );
 
 	set( hc, 'YTick', nprevcols + 1 + (ticks-cval+datahw) / (2*datahw) * (ncols-1) );

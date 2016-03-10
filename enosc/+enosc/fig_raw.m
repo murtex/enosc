@@ -1,13 +1,14 @@
-function fig_raw( h5c, times, epsilons, betas, plotfile )
+function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
 % plot raw trajectory
 %
-% FIG_RAW( h5c, times, epsilons, betas, plotfile )
+% FIG_RAW( h5c, times, epsilons, betas, fmf, plotfile )
 %
 % INPUT
 % h5c : data container (scalar object)
 % times : stepping time range (row numeric)
 % epsilons : epsilon coupling range (row numeric)
 % betas : beta coupling range (row numeric)
+% fmf : meanfield flag (scalar logical)
 % plotfile : plot filename (row char)
 
 		% safeguard
@@ -29,14 +30,18 @@ function fig_raw( h5c, times, epsilons, betas, plotfile )
 		epsilons = [h5c.epsilons(1), h5c.epsilons(end)];
 	end
 
-	if nargin < 3 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
+	if nargin < 4 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
 		error( 'invalid argument: betas' );
 	end
 	if isempty( betas )
 		betas = [h5c.betas(1), h5c.betas(end)];
 	end
 
-	if nargin < 5 || ~isrow( plotfile ) || ~ischar( plotfile )
+	if nargin < 5 || ~isscalar( fmf ) || ~islogical( fmf )
+		error( 'invalid argument: fmf' );
+	end
+
+	if nargin < 6 || ~isrow( plotfile ) || ~ischar( plotfile )
 		error( 'invalid argument: plotfile' );
 	end
 
@@ -55,25 +60,51 @@ function fig_raw( h5c, times, epsilons, betas, plotfile )
 	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
 	x = double( h5read( h5c.filename, '/raw/x', fliplr( starts ), fliplr( counts ) ) );
 
-	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
-	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-	mx = double( h5read( h5c.filename, '/raw/mx', fliplr( starts ), fliplr( counts ) ) );
+	if fmf
+		starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+		counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
+		mx = double( h5read( h5c.filename, '/raw/mx', fliplr( starts ), fliplr( counts ) ) );
+	end
 
 	x = squeeze( x );
-	mx = squeeze( mx );
+	if fmf
+		mx = squeeze( mx );
+	end
 
 		% plot
-	fig = style.figure();
+	fig = style.figure( ...
+		'Color', [1, 1, 1], 'InvertHardcopy', 'off', ...
+		'PaperUnits', 'points', 'PaperPosition', [0, 0, 409, 409] );
 
-	title( sprintf( 'raw trajectory (time: %s, epsilon: %s, beta: %s)', ...
-		enosc.par2str( times ), enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+	switch h5c.dim
+		case 2 % two-dimensional
+			xlabel( 'x' );
+			ylabel( 'y' );
 
-	view( 30, 35 );
+			plot( x(1, :), x(2, :), ...
+				'Color', style.color( 'cold', 0 ) );
+			if fmf
+				plot( mx(1, :), mx(2, :), ...
+					'Color', style.color( 'warm', 0 ) );
+			end
 
-	plot3( x(1, :), x(2, :), x(3, :), ...
-		'Color', style.color( 'cold', 0 ) );
-	plot3( mx(1, :), mx(2, :), mx(3, :), ...
-		'Color', style.color( 'warm', 0 ) );
+		case 3 % three-dimensional
+			view( 30, 35 );
+
+			xlabel( 'x' );
+			ylabel( 'y' );
+			zlabel( 'z' );
+
+			plot3( x(1, :), x(2, :), x(3, :), ...
+				'Color', style.color( 'cold', 0 ) );
+			if fmf
+				plot3( mx(1, :), mx(2, :), mx(3, :), ...
+					'Color', style.color( 'warm', 0 ) );
+			end
+
+		otherwise
+			error( 'invalid value: dim' );
+	end
 
 		% done
 	style.print( plotfile );

@@ -81,18 +81,18 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 	title( sprintf( 'frequency detune (time: %s)', enosc.par2str( times ) ) );
 	cval = 0;
 	if cval >= min( detune(:) ) && cval <= max( detune(:) )
-		enosc.plot_map3( 'detune', squeeze( detune ), epsilons, betas, cval );
+		enosc.plot_map3( squeeze( detune ), epsilons, betas, cval );
 	else
-		enosc.plot_map2( 'detune', squeeze( detune ), epsilons, betas );
+		enosc.plot_map2( squeeze( detune ), epsilons, betas );
 	end
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble frequency' );
-	enosc.plot_map2( 'frequency', squeeze( dmxdt ), epsilons, betas );
+	enosc.plot_map2( squeeze( dmxdt ), epsilons, betas );
 	
 	subplot( 2, 2, 4 );
 	title( 'meanfield frequency' );
-	enosc.plot_map2( 'frequency', squeeze( dmfdt ), epsilons, betas );
+	enosc.plot_map2( squeeze( dmfdt ), epsilons, betas );
 
 		% done
 	style.print( plotfile );

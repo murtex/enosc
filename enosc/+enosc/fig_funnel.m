@@ -93,15 +93,15 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 
 	subplot( 2, 2, [1, 2] );
 	title( sprintf( 'funnel indicator (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map2( 'funnel', squeeze( total ), epsilons, betas );
+	enosc.plot_map2( squeeze( total ), epsilons, betas );
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble funnel' );
-	enosc.plot_map2( 'funnel', squeeze( mx ), epsilons, betas );
+	enosc.plot_map2( squeeze( mx ), epsilons, betas );
 	
 	subplot( 2, 2, 4 );
 	title( 'meanfield funnel' );
-	enosc.plot_map2( 'funnel', squeeze( mf ), epsilons, betas );
+	enosc.plot_map2( squeeze( mf ), epsilons, betas );
 
 		% done
 	style.print( plotfile );
