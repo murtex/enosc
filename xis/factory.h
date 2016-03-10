@@ -3,9 +3,14 @@
  * 20150703
  *
  * abstract factory pattern
+ *
+ * TODO: template<class> class std::auto_ptr’ is deprecated
  */
 #ifndef XIS_FACTORY_H
 #define XIS_FACTORY_H
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 	/* includes */
 #include <map>
@@ -60,6 +65,8 @@ namespace xis
 	};
 
 }
+
+#pragma GCC diagnostic pop
 
 #endif /* XIS_FACTORY_H */
 
