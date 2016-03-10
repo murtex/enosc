@@ -71,11 +71,14 @@ namespace enosc
             enosc::scalar const mx = thrust::get< 5 >( t ); /* meanfield input */
 			enosc::scalar const my = thrust::get< 6 >( t );
 
-			enosc::scalar const sinbeta = sin( beta * M_PI ); /* derivative output */
+			enosc::scalar const sinbeta = sin( beta * M_PI ); /* pre-computations */
 			enosc::scalar const cosbeta = cos( beta * M_PI );
 
-			thrust::get< 7 >( t ) = -y - z + epsilon*(mx*cosbeta - my*sinbeta);
-			thrust::get< 8 >( t ) = x + a*y + epsilon*(mx*sinbeta + my*cosbeta);
+			enosc::scalar const sak_real = mx*cosbeta - my*sinbeta;
+			enosc::scalar const sak_imag = mx*sinbeta + my*cosbeta;
+
+			thrust::get< 7 >( t ) = -y - z + epsilon*sak_real; /* derivative output */
+			thrust::get< 8 >( t ) = x + a*y + epsilon*sak_imag;
             thrust::get< 9 >( t ) = b + z*(x - c);
 		}
 	};

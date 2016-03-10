@@ -33,6 +33,7 @@ namespace enosc
 
 			unsigned int _size; /* ensemble size */
 			unsigned int _dim; /* dimensionality */
+			bool _fpolar; /* polar flag */
 
 			enosc::device_vector _epsilons; /* coupling */
 			enosc::device_vector _betas;
@@ -41,8 +42,10 @@ namespace enosc
 
 			virtual void configure( libconfig::Config const & config, std::string const & groupname );
 
+			unsigned int get_seed() const { return _seed; }
 			unsigned int get_size() const { return _size; }
 			unsigned int get_dim() const { return _dim; }
+			bool is_polar() const { return _fpolar; }
 
 			enosc::device_vector const & get_epsilons() const { return _epsilons; }
 			enosc::device_vector const & get_betas() const { return _betas; }
@@ -79,7 +82,7 @@ namespace enosc
 		public:
 
 			virtual bool compute_deriv_det( enosc::device_vector const & state, enosc::scalar time ) { return false; }
-			virtual bool compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time, enosc::device_vector const & random ) { return false; }
+			virtual bool compute_deriv_stoch( enosc::device_vector const & state, enosc::scalar time ) { return false; }
 
 	};
 

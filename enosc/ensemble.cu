@@ -83,6 +83,7 @@ void enosc::Ensemble::configure( libconfig::Config const & config, std::string c
 
 	logger.log() << "size: " << _size << "\n";
 	logger.log() << "dim: " << _dim << "\n";
+	logger.log() << "polar: " << _fpolar << "\n";
 
 	logger.log() << "epsilons: " << _epsilons << "\n";
 	logger.log() << "betas: " << _betas << "\n";
@@ -140,20 +141,38 @@ void enosc::Ensemble::compute_polar( enosc::device_vector const & buf, enosc::de
 	if ( buf_deriv.size() < buf.size() )
 		size = buf_deriv.size() / (_dim * _epsilons.size() * _betas.size());
 
-	thrust::for_each_n(
-		thrust::make_zip_iterator( thrust::make_tuple(
+	if ( _fpolar ) /* identity */
+		thrust::for_each_n(
+			thrust::make_zip_iterator( thrust::make_tuple(
 
-			buf.begin(), /* cartesian input */
-			buf.begin() + _epsilons.size() * _betas.size() * size,
-			buf_deriv.begin(),
-			buf_deriv.begin() + _epsilons.size() * _betas.size() * size,
+				buf.begin(), /* polar input */
+				buf.begin() + _epsilons.size() * _betas.size() * size,
+				buf_deriv.begin(),
+				buf_deriv.begin() + _epsilons.size() * _betas.size() * size,
 
-			_polar.begin(), /* polar output */
-			_polar.begin() + _epsilons.size() * _betas.size() * size,
-			_deriv.begin(),
-			_deriv.begin() + _epsilons.size() * _betas.size() * size ) ),
+				_polar.begin(), /* polar output */
+				_polar.begin() + _epsilons.size() * _betas.size() * size,
+				_deriv.begin(),
+				_deriv.begin() + _epsilons.size() * _betas.size() * size ) ),
 
-		_epsilons.size() * _betas.size() * size, enosc::CartesianToPolar() );
+			_epsilons.size() * _betas.size() * size, enosc::PolarToPolarFull() );
+
+	else /* cartesian to polar */
+		thrust::for_each_n(
+			thrust::make_zip_iterator( thrust::make_tuple(
+
+				buf.begin(), /* cartesian input */
+				buf.begin() + _epsilons.size() * _betas.size() * size,
+				buf_deriv.begin(),
+				buf_deriv.begin() + _epsilons.size() * _betas.size() * size,
+
+				_polar.begin(), /* polar output */
+				_polar.begin() + _epsilons.size() * _betas.size() * size,
+				_deriv.begin(),
+				_deriv.begin() + _epsilons.size() * _betas.size() * size ) ),
+
+			_epsilons.size() * _betas.size() * size, enosc::CartesianToPolarFull() );
+
 }
 
 void enosc::Ensemble::compute_mean( enosc::device_vector const & buf )

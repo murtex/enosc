@@ -19,6 +19,7 @@ enosc::RoesslerMod::RoesslerMod()
 
 		/* initialize configuration */
 	_dim = 3;
+	_fpolar = false;
 
 	_e = 0.15;
 	_f = 0.2;
