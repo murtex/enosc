@@ -59,6 +59,7 @@ void enosc::Stepper::configure( libconfig::Config const & config, std::string co
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();
 
 	logger.log() << "times: " << _times << "\n";
+	logger.log() << "dt: " << _dt << "\n";
 
 }
 

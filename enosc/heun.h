@@ -30,6 +30,11 @@ namespace enosc
 			void configure( libconfig::Config const & config, std::string const & groupname );
 
 			/* integration */
+		private:
+
+			enosc::device_vector _tmp1; /* temporary buffers */
+			enosc::device_vector _tmp2;
+
 		public:
 
 			void init( enosc::Ensemble const & ensemble );
