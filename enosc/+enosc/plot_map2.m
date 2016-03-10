@@ -80,6 +80,13 @@ function plot_map2( data, epsilons, betas )
 	set( hc, 'YTick', nprevcols + 1 + (ticks-datamin) / datadiff * (ncols-1) );
 	set( hc, 'YTickLabel', ticklabels );
 
+	axpos = get( gca(), 'Position' ); % reduce width
+	cbpos = get( hc, 'Position' );
+	cbpos(1) = cbpos(1) - cbpos(3) / 3;
+	cbpos(3) = cbpos(3) / 2;
+	set( hc, 'Position', cbpos );
+	set( gca(), 'Position', axpos );
+
 		% restore previous colorbars
 	for i = 1:numel( hcs )
 		set( hcs(i), 'YLim', prevlims(i, :) );

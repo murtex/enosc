@@ -58,16 +58,23 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 		% read data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 2, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
+
 	x = squeeze( double( h5read( h5c.filename, '/polar/x', fliplr( starts ), fliplr( counts ) ) ) );
 	mx = squeeze( double( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ) ) );
 	dxdt = squeeze( double( h5read( h5c.filename, '/polar/dxdt', fliplr( starts ), fliplr( counts ) ) ) );
 	dmxdt = squeeze( double( h5read( h5c.filename, '/polar/dmxdt', fliplr( starts ), fliplr( counts ) ) ) );
 
+	dxdt(2, :) = dxdt(2, :) / h5c.dt;
+	dmxdt(2, :) = dmxdt(2, :) / h5c.dt;
+
 	if fmf
 		starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 		counts = [numel( itimes ), 2, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
+
 		mf = squeeze( double( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ) ) );
 		dmfdt = squeeze( double( h5read( h5c.filename, '/polar/dmfdt', fliplr( starts ), fliplr( counts ) ) ) );
+
+		dmfdt(2, :) = dmfdt(2, :) / h5c.dt;
 	end
 
 		% plot
@@ -90,6 +97,8 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 	xlabel( 'time ' );
 	ylabel( 'amplitude' );
 
+	xlim( [0, times(end)-times(1)] );
+
 	plot( times-times(1), x(1, :), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 	if fmf
 		plot( times-times(1), mf(1, :), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'meanfield' );
@@ -104,6 +113,8 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 
 	xlabel( 'time' );
 	ylabel( 'frequency' );
+
+	xlim( [0, times(end)-times(1)] );
 
 	plot( times-times(1), dxdt(2, :), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 	if fmf
