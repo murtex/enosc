@@ -193,7 +193,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 
 		/* update ensemble center (transition phase) */
 	if ( step < _transition ) {
-		if ( _centering ) {
+		if ( !ensemble.is_polar() && _centering ) {
 			ensemble.compute_mean( state );
 
 			thrust::transform(
@@ -239,7 +239,7 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _polar_x.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	if ( _centering ) /* center ensemble */
+	if ( !ensemble.is_polar() && _centering ) /* center ensemble */
 		thrust::transform(
 			state.begin(), state.end(),
 			thrust::make_permutation_iterator(
@@ -252,6 +252,16 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	ensemble.compute_polar( state, deriv );
 	_polar_x.write( enosc::host_vector( polar.begin(), polar.end() ).data(), _datatype, dataspace_in, dataspace_out );
 	_polar_dxdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
+
+	if ( !ensemble.is_polar() && _centering ) /* un-center ensemble */
+		thrust::transform(
+			state.begin(), state.end(),
+			thrust::make_permutation_iterator(
+				_center.begin(),
+				thrust::make_transform_iterator(
+					thrust::counting_iterator< unsigned int >( 0 ),
+					thrust::placeholders::_1 / ensemble.get_size() ) ),
+	        state.begin(), thrust::plus< enosc::scalar >() );
 
 		/* write mean funnel */
 	dims_in[0] = 1;
@@ -299,19 +309,8 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _raw_mx.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	if ( _centering ) /* un-center ensemble */
-		thrust::transform(
-			state.begin(), state.end(),
-			thrust::make_permutation_iterator(
-				_center.begin(),
-				thrust::make_transform_iterator(
-					thrust::counting_iterator< unsigned int >( 0 ),
-					thrust::placeholders::_1 / ensemble.get_size() ) ),
-	        state.begin(), thrust::plus< enosc::scalar >() );
-
 	ensemble.compute_mean( state );
 	_raw_mx.write( enosc::host_vector( mean.begin(), mean.end() ).data(), _datatype, dataspace_in, dataspace_out );
-	thrust::copy( mean.begin(), mean.end(), _tmp.begin() ); /* keep a backup of raw-mx */
 
 	thrust::transform( /* re-compute derivative */
 		state_next.begin(), state_next.end(),
@@ -333,13 +332,51 @@ void enosc::HDF5::observe( enosc::Ensemble & ensemble, unsigned int step, enosc:
 	dataspace_out = _polar_mf.getSpace();
 	dataspace_out.selectHyperslab( H5S_SELECT_SET, counts_out, starts_out );
 
-	if ( _centering ) /* re-center meanfield */
-		thrust::transform(
-			_tmp.begin(), _tmp.end(),
-			_center.begin(),
-	        _tmp.begin(), thrust::minus< enosc::scalar >() );
+	if ( ensemble.is_polar() ) /* polar to cartesian */
+		thrust::for_each_n(
+			thrust::make_zip_iterator( thrust::make_tuple(
+				
+				state.begin(), /* polar input */
+				state.begin() + state.size()/2,
+				deriv.begin(),
+				deriv.begin() + deriv.size()/2,
 
-	ensemble.compute_polar( _tmp, mean ); /* use backup of raw-mx */
+				state.begin(), /* cartesian output */
+				state.begin() + state.size()/2,
+				deriv.begin(),
+				deriv.begin() + deriv.size()/2 ) ),
+
+			state.size()/2, enosc::PolarToCartesianFull() );
+
+	ensemble.compute_mean( state );
+	thrust::copy( mean.begin(), mean.end(), _tmp.begin() ); /* backup raw-mx */
+	ensemble.compute_mean( deriv );
+
+	if ( ensemble.is_polar() ) /* cartesian to polar */
+		thrust::for_each_n(
+			thrust::make_zip_iterator( thrust::make_tuple(
+				
+				_tmp.begin(), /* cartesian input */
+				_tmp.begin() + _tmp.size()/2,
+				mean.begin(),
+				mean.begin() + mean.size()/2,
+
+				_tmp.begin(), /* polar output */
+				_tmp.begin() + _tmp.size()/2,
+				mean.begin(),
+				mean.begin() + mean.size()/2 ) ),
+
+			_tmp.size()/2, enosc::CartesianToPolarFull() );
+
+	else
+		if ( _centering ) /* center meanfield */
+			thrust::transform(
+				_tmp.begin(), _tmp.end(),
+				_center.begin(),
+				_tmp.begin(), thrust::minus< enosc::scalar >() );
+
+	ensemble.compute_polar( _tmp, mean );
+
 	_polar_mf.write( enosc::host_vector( polar.begin(), polar.end() ).data(), _datatype, dataspace_in, dataspace_out );
 	_polar_dmfdt.write( enosc::host_vector( deriv.begin(), deriv.end() ).data(), _datatype, dataspace_in, dataspace_out );
 

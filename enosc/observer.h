@@ -13,6 +13,7 @@
 #include <enosc/types.h>
 #include <enosc/ensemble.h>
 #include <enosc/stepper.h>
+#include <enosc/kernels.h>
 
 	/* interface */
 namespace enosc
