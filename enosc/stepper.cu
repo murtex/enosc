@@ -20,6 +20,14 @@ enosc::Stepper::Stepper()
 
 }
 
+enosc::Stepper::~Stepper()
+{
+
+		/* release objects */
+	delete _rnd;
+
+}
+
 	/* configuration */
 void enosc::Stepper::configure( libconfig::Config const & config, std::string const & groupname )
 {
@@ -58,8 +66,12 @@ void enosc::Stepper::configure( libconfig::Config const & config, std::string co
 void enosc::Stepper::init( enosc::Ensemble const & ensemble )
 {
 
-		/* prepare buffers */
-	_random.resize( ensemble.get_dim() * ensemble.get_epsilons().size() * ensemble.get_betas().size() * ensemble.get_size() ); /* randomness */
+		/* prepare randomness */
+	_rng.seed( ensemble.get_seed() );
+	_rnd = new std::normal_distribution< enosc::scalar >( 0, sqrt( _dt ) );
+
+	_hrandom.resize( ensemble.get_dim() * ensemble.get_size() );
+	_drandom.resize( ensemble.get_dim() * ensemble.get_epsilons().size() * ensemble.get_betas().size() * ensemble.get_size() );
 
 		/* logging */
 	xis::Logger & logger = xis::Singleton< xis::Logger >::instance();

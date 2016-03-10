@@ -8,6 +8,8 @@
 #define ENOSC_STEPPER_H
 
 	/* includes */
+#include <random>
+
 #include <xis/config.h>
 
 #include <enosc/types.h>
@@ -25,7 +27,7 @@ namespace enosc
 		public:
 
 			Stepper();
-			virtual ~Stepper() {}
+			virtual ~Stepper();
 
 			/* configuration */
 		protected:
@@ -43,7 +45,11 @@ namespace enosc
 			/* integration */
 		protected:
 
-			enosc::device_vector _random; /* randomness */
+			std::default_random_engine _rng; /* randomness */
+			std::normal_distribution< enosc::scalar > * _rnd;
+
+			enosc::host_vector _hrandom;
+			enosc::device_vector _drandom; 
 
 		public:
 
