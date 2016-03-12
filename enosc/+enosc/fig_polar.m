@@ -78,7 +78,10 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 	end
 
 		% plot
-	fig = style.figure();
+	fig = style.figure( ...
+		'PaperPosition', enosc.tile( 6, 4 ), ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', 'defaultAxesZGrid', 'on' ...
+		);
 
 	subplot( 2, 2, [1, 3] ); % polar
 
@@ -92,7 +95,8 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 		set( h, 'Color', style.color( 'warm', +2 ) );
 	end
 
-	subplot( 2, 2, 2 ); % amplitude
+	subplot( 2, 2, 2, ... % amplitude
+		'NextPlot', 'add' );
 
 	xlabel( 'time ' );
 	ylabel( 'amplitude' );
@@ -109,7 +113,8 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 	end
 	plot( xlim(), mean( mx(1, :) ) * [1, 1], 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
 
-	subplot( 2, 2, 4 ); % frequency
+	subplot( 2, 2, 4, ... % frequency
+		'NextPlot', 'add' );
 
 	xlabel( 'time' );
 	ylabel( 'frequency' );

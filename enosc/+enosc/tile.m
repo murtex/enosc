@@ -1,7 +1,7 @@
 function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 % tiling figure
 %
-% ppos = tile( ncols, nrows, tilex=59, tiley=89, tilesep=11 )
+% ppos = tile( ncols, nrows, tilex=59, tiley=59, tilesep=11 )
 %
 % INPUTS
 % ncols : number of columns (scalar numeric)
@@ -13,6 +13,8 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 % OUTPUTS
 % ppos : 'PaperPosition' property
 
+	INVSCALE = 0.7;
+
 		% safeguard
 	if nargin < 1 || ~isscalar( ncols ) || ~isnumeric( ncols )
 		error( 'invalid argument: ncols' );
@@ -23,21 +25,21 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 	end
 
 	if nargin < 3
-		tilex = 59;
+		tilex = 59 / INVSCALE;
 	end
 	if ~isscalar( tilex ) || ~isnumeric( tilex )
 		error( 'invalid argument: tilex' );
 	end
 
 	if nargin < 4
-		tiley = 89;
+		tiley = 59 / INVSCALE;
 	end
 	if ~isscalar( tiley ) || ~isnumeric( tiley )
 		error( 'invalid argument: tiley' );
 	end
 
 	if nargin < 5
-		tilesep = 11;
+		tilesep = 11 / INVSCALE;
 	end
 	if ~isscalar( tilesep ) || ~isnumeric( tilesep )
 		error( 'invalid argument: tilesep' );

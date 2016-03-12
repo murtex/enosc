@@ -38,6 +38,7 @@ classdef (Sealed = true) hStyle < handle
 				'InvertHardCopy', 'off', ...
 				'Color', [0.95, 0.95, 0.95], ... % DEBUG
 				'PaperUnits', 'points', ...
+				'defaultTextFontSize', 10, 'defaultAxesFontSize', 10, ...
 				'defaultAxesBox', 'on', 'defaultAxesLayer', 'top', ...
 				varargin{:} );
 
@@ -78,9 +79,9 @@ classdef (Sealed = true) hStyle < handle
 			switch lower( ext )
 
 				case '.png' % bitmaps
-					formatopts = {'-dpng', '-r125'};
+					formatopts = {'-dpng', '-r140'};
 				case '.jpg'
-					formatopts = {'-djpeg', '-r125'};
+					formatopts = {'-djpeg', '-r140'};
 
 				case '.eps' % vectors
 					formatopts = {'-depsc2', '-loose'};
