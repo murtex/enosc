@@ -25,21 +25,21 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 	end
 
 	if nargin < 3
-		tilex = 59 / INVSCALE;
+		tilex = 59 / INVSCALE * 0.83;
 	end
 	if ~isscalar( tilex ) || ~isnumeric( tilex )
 		error( 'invalid argument: tilex' );
 	end
 
 	if nargin < 4
-		tiley = 59 / INVSCALE;
+		tiley = 59 / INVSCALE * 0.83;
 	end
 	if ~isscalar( tiley ) || ~isnumeric( tiley )
 		error( 'invalid argument: tiley' );
 	end
 
 	if nargin < 5
-		tilesep = 11 / INVSCALE;
+		tilesep = 11 / INVSCALE * 0.83;
 	end
 	if ~isscalar( tilesep ) || ~isnumeric( tilesep )
 		error( 'invalid argument: tilesep' );

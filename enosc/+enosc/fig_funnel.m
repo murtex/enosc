@@ -30,7 +30,7 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 		epsilons = [h5c.epsilons(1), h5c.epsilons(end)];
 	end
 
-	if nargin < 3 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
+	if nargin < 4 || (~isempty( betas ) && ~isrow( betas )) || ~isnumeric( betas )
 		error( 'invalid argument: betas' );
 	end
 	if isempty( betas )
