@@ -78,6 +78,8 @@ function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
 		'defaultAxesNextPlot', 'add' ...
 		);
 
+	title( sprintf( 'trajectory (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+
 	switch h5c.dim
 		case 2 % two-dimensional
 			xlabel( 'x' );

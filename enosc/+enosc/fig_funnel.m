@@ -1,5 +1,5 @@
 function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
-% plot funnel indicator
+% plot funnel
 %
 % FIG_FUNNEL( h5c, times, epsilons, betas, plotfile, mask=true )
 %
@@ -81,7 +81,7 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 
 	subplot( 2, 2, [1, 2] );
-	title( sprintf( 'composite funnel (time: %s)', enosc.par2str( times ) ) );
+	title( sprintf( 'composite funnel' ) );
 	enosc.plot_map2( total, epsilons, betas );
 
 	subplot( 2, 2, 3 );

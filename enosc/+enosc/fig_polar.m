@@ -85,15 +85,14 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 
 	subplot( 2, 2, [1, 3] ); % polar
 
-	title( sprintf( 'polar trajectory (time: %s, epsilon: %s, beta: %s)', ...
-		enosc.par2str( times ), enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
-
 	h = polar( x(2, :), x(1, :) );
 	set( h, 'Color', style.color( 'neutral', +2 ) );
 	if fmf
 		h = polar( mf(2, :), mf(1, :) );
 		set( h, 'Color', style.color( 'warm', +2 ) );
 	end
+
+	title( sprintf( 'trajectory (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
 	subplot( 2, 2, 2, ... % amplitude
 		'NextPlot', 'add' );
@@ -112,6 +111,8 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 		plot( xlim(), mean( mf(1, :) ) * [1, 1], 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. meanfield' );
 	end
 	plot( xlim(), mean( mx(1, :) ) * [1, 1], 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
+
+	set( gca(), 'YLim', [0, get( gca(), 'YLim') * [0; 1]]);
 
 	subplot( 2, 2, 4, ... % frequency
 		'NextPlot', 'add' );

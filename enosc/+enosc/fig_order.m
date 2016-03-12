@@ -1,5 +1,5 @@
 function fig_order( h5c, times, epsilons, betas, plotfile, mask )
-% plot synchronization order
+% plot order
 %
 % FIG_ORDER( h5c, times, epsilons, betas, plotfile, mask=true )
 %
@@ -81,7 +81,7 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 
 	subplot( 2, 2, [1, 2] );
-	title( sprintf( 'order parameter (time: %s)', enosc.par2str( times ) ) );
+	title( sprintf( 'order parameter' ) );
 	enosc.plot_map2( order, epsilons, betas );
 
 	subplot( 2, 2, 3 );
