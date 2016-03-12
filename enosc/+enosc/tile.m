@@ -1,7 +1,7 @@
 function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 % tiling figure
 %
-% ppos = tile( ncols, nrows, tilex=59, tiley=59, tilesep=11 )
+% ppos = tile( ncols, nrows, tilex=59, tiley=89, tilesep=11 )
 %
 % INPUTS
 % ncols : number of columns (scalar numeric)
@@ -30,7 +30,7 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 	end
 
 	if nargin < 4
-		tiley = 59;
+		tiley = 89;
 	end
 	if ~isscalar( tiley ) || ~isnumeric( tiley )
 		error( 'invalid argument: tiley' );

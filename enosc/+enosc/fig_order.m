@@ -46,7 +46,7 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot synchronization order (''%s'')...', plotfile );
+	logger.tab( 'plot order (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -58,36 +58,39 @@ function fig_order( h5c, times, epsilons, betas, plotfile, mask )
 		% read data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
-	mx = double( mean( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) );
+	mx = squeeze( double( mean( h5read( h5c.filename, '/polar/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-	mf = double( mean( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) );
+	mf = squeeze( double( mean( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
 
 	if nargin >= 6 % apply mask
 		mx(~mask) = NaN;
 		mf(~mask) = NaN;
 	end
 
-		% compute order
-	order = mf ./ mx;
+	order = mf ./ mx; % order parameter
 
 		% plot
-	fig = style.figure();
+	fig = style.figure( ...
+		'PaperPosition', enosc.tile( 6, 3 ), ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', ...
+		'defaultAxesNextPlot', 'add' ...
+		);
 
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 
 	subplot( 2, 2, [1, 2] );
-	title( sprintf( 'synchronization order (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map2( squeeze( order ), epsilons, betas );
+	title( sprintf( 'order parameter (time: %s)', enosc.par2str( times ) ) );
+	enosc.plot_map2( order, epsilons, betas );
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble amplitude' );
-	enosc.plot_map2( squeeze( mx ), epsilons, betas );
+	enosc.plot_map2( mx, epsilons, betas );
 	
 	subplot( 2, 2, 4 );
 	title( 'meanfield amplitude' );
-	enosc.plot_map2( squeeze( mf ), epsilons, betas );
+	enosc.plot_map2( mf, epsilons, betas );
 
 		% done
 	style.print( plotfile );

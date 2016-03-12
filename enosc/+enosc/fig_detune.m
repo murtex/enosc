@@ -46,7 +46,7 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot frequency detune (''%s'')...', plotfile );
+	logger.tab( 'plot detune (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -69,11 +69,15 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 		dmfdt(~mask) = NaN;
 	end
 
-		% compute detune
-	detune = dmfdt ./ dmxdt - 1;
+	detune = dmfdt - dmxdt; % frequency detune
+	%detune = dmfdt ./ dmxdt - 1;
 
 		% plot
-	fig = style.figure();
+	fig = style.figure( ...
+		'PaperPosition', enosc.tile( 6, 3 ), ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', ...
+		'defaultAxesNextPlot', 'add' ...
+		);
 
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 

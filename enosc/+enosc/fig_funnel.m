@@ -46,7 +46,7 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot funnel indicator (''%s'')...', plotfile );
+	logger.tab( 'plot funnel (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -58,50 +58,39 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 		% read funnel data
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
-	mx = double( abs( sum( h5read( h5c.filename, '/funnel/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+	mx = squeeze( double( abs( sum( h5read( h5c.filename, '/funnel/mx', fliplr( starts ), fliplr( counts ) ), 5 ) ) ) );
 
 	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-	mf = double( abs( sum( h5read( h5c.filename, '/funnel/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) );
+	mf = squeeze( double( abs( sum( h5read( h5c.filename, '/funnel/mf', fliplr( starts ), fliplr( counts ) ), 5 ) ) ) );
 
 	if nargin >= 6 % apply mask
 		mx(~mask) = NaN;
 		mf(~mask) = NaN;
 	end
 
-	%mxmax = max( mx(:) ); % normalization
-	%if mxmax ~= 0
-		%mx = mx / mxmax;
-	%end
-	%mfmax = max( mf(:) );
-	%if mfmax ~= 0
-		%mf = mf / mfmax;
-	%end
-
-		% compute total funnel
-	total = mx + mf;
-
-	%totalmax = max( total(:) ); % normalization
-	%if totalmax ~= 0
-		%total = total / totalmax;
-	%end
+	total = max( mx, mf ); % composite funnel
 
 		% plot
-	fig = style.figure();
+	fig = style.figure( ...
+		'PaperPosition', enosc.tile( 6, 3 ), ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', ...
+		'defaultAxesNextPlot', 'add' ...
+		);
 
 	colormap( [1, 1, 1] ); % initialize nan-colormap
 
 	subplot( 2, 2, [1, 2] );
-	title( sprintf( 'funnel indicator (time: %s)', enosc.par2str( times ) ) );
-	enosc.plot_map2( squeeze( total ), epsilons, betas );
+	title( sprintf( 'composite funnel (time: %s)', enosc.par2str( times ) ) );
+	enosc.plot_map2( total, epsilons, betas );
 
 	subplot( 2, 2, 3 );
 	title( 'ensemble funnel' );
-	enosc.plot_map2( squeeze( mx ), epsilons, betas );
+	enosc.plot_map2( mx, epsilons, betas );
 	
 	subplot( 2, 2, 4 );
 	title( 'meanfield funnel' );
-	enosc.plot_map2( squeeze( mf ), epsilons, betas );
+	enosc.plot_map2( mf, epsilons, betas );
 
 		% done
 	style.print( plotfile );
