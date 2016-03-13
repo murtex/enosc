@@ -93,7 +93,7 @@ namespace enosc
 			enosc::scalar const theta = thrust::get< 5 >( t );
 
 			thrust::get< 6 >( t ) = 0; /* derivative output */
-			thrust::get< 7 >( t ) = sqrt( 2*gamma ) * epsilon*K*sin( theta - phi + beta*M_PI );
+			thrust::get< 7 >( t ) = -sqrt( 2*gamma ) * epsilon*K*sin( theta - phi + beta*M_PI );
 		}
 	};
 
