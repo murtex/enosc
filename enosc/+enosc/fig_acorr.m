@@ -1,14 +1,13 @@
-function fig_acorr( h5c, times, epsilons, betas, fmf, plotfile )
+function fig_acorr( h5c, times, epsilons, betas, plotfile )
 % plot autocorrelation
 %
-% FIG_ACORR( h5c, times, epsilons, betas, fmf, plotfile )
+% FIG_ACORR( h5c, times, epsilons, betas, plotfile )
 %
 % INPUT
 % h5c : data container (scalar object)
 % times : stepping time range (row numeric)
 % epsilons : epsilon coupling range (row numeric)
 % betas : beta coupling range (row numeric)
-% fmf : meanfield flag (scalar logical)
 % plotfile : plot filename (row char)
 
 		% safeguard
@@ -37,11 +36,7 @@ function fig_acorr( h5c, times, epsilons, betas, fmf, plotfile )
 		betas = [h5c.betas(1), h5c.betas(end)];
 	end
 
-	if nargin < 5 || ~isscalar( fmf ) || ~islogical( fmf )
-		error( 'invalid argument: fmf' );
-	end
-
-	if nargin < 6 || ~isrow( plotfile ) || ~ischar( plotfile )
+	if nargin < 5 || ~isrow( plotfile ) || ~ischar( plotfile )
 		error( 'invalid argument: plotfile' );
 	end
 
@@ -58,25 +53,24 @@ function fig_acorr( h5c, times, epsilons, betas, fmf, plotfile )
 		% prepare white noise
 
 		% read data
+	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
+	x = squeeze( double( h5read( h5c.filename, '/polar/x', fliplr( starts ), fliplr( counts ) ) ) );
+
 	starts = [itimes(1), 2, iepsilons(1), ibetas(1), 1];
 	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
 	dxdt = squeeze( double( h5read( h5c.filename, '/polar/dxdt', fliplr( starts ), fliplr( counts ) ) ) ) / h5c.dt;
-	dmxdt = squeeze( double( h5read( h5c.filename, '/polar/dmxdt', fliplr( starts ), fliplr( counts ) ) ) ) / h5c.dt;
 
-	if fmf
-		starts = [itimes(1), 2, iepsilons(1), ibetas(1), 1];
-		counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-		dmfdt = squeeze( double( h5read( h5c.filename, '/polar/dmfdt', fliplr( starts ), fliplr( counts ) ) ) ) / h5c.dt;
-	end
+	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
+	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
+	mf = squeeze( double( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ) ) );
 
-	wn = wgn( numel( dxdt ), 1, 0 ); % autocorrelation
-	awn = autocorr( wn, numel( wn )-1 );
+	wn = wgn( numel( x ), 1, 0 ); % white noise
+	order = mf ./ x; % order parameter
 
+	awn = autocorr( wn, numel( wn )-1 ); % autocorrelation
+	aorder = autocorr( order, numel( order )-1 );
 	adxdt = autocorr( dxdt, numel( dxdt )-1 );
-	admxdt = autocorr( dmxdt, numel( dmxdt )-1 );
-	if fmf
-		admfdt = autocorr( dmfdt, numel( dmfdt )-1 );
-	end
 
 		% plot
 	fig = style.figure( ...
@@ -86,11 +80,8 @@ function fig_acorr( h5c, times, epsilons, betas, fmf, plotfile )
 
 	semilogx( awn, 'Color', style.color( 'neutral', 0 ), 'DisplayName', 'white noise' );
 	hold on
+	%semilogx( aorder, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'order parameter' );
 	semilogx( adxdt, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
-	if fmf
-		hold on
-		semilogx( admfdt, 'Color', style.color( 'warm', +2 ), 'DisplayName', 'meanfield' );
-	end
 
 	title( sprintf( 'frequency autocorrelation (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 

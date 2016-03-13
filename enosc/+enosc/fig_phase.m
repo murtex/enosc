@@ -66,8 +66,15 @@ function fig_phase( h5c, times, epsilons, betas, fmf, plotfile )
 		mf = squeeze( double( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ) ) );
 	end
 
-	x = unwrap( x ); % unwrap phase
+	while x(1) > 2*pi % unwrap phase
+		x = x - 2*pi;
+	end
+	x = unwrap( x );
+
 	if fmf
+		while mf(1) > 2*pi
+			mf = mf - 2*pi;
+		end
 		mf = unwrap( mf );
 	end
 

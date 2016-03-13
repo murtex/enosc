@@ -88,6 +88,7 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 	h = polar( x(2, :), x(1, :) );
 	set( h, 'Color', style.color( 'neutral', +2 ) );
 	if fmf
+		hold on;
 		h = polar( mf(2, :), mf(1, :) );
 		set( h, 'Color', style.color( 'warm', +2 ) );
 	end
