@@ -1,5 +1,5 @@
 function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
-% plot polar trajectory
+% plot polar
 %
 % FIG_POLAR( h5c, times, epsilons, betas, fmf, plotfile )
 %
@@ -46,7 +46,7 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot polar trajectory (''%s'')...', plotfile );
+	logger.tab( 'plot polar (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -80,7 +80,7 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 		% plot
 	fig = style.figure( ...
 		'PaperPosition', enosc.tile( 6, 4 ), ...
-		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', 'defaultAxesZGrid', 'on' ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on' ...
 		);
 
 	subplot( 2, 2, [1, 3] ); % polar

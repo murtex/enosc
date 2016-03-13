@@ -1,7 +1,7 @@
-function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
-% plot raw 
+function fig_phase( h5c, times, epsilons, betas, fmf, plotfile )
+% plot phase
 %
-% FIG_RAW( h5c, times, epsilons, betas, fmf, plotfile )
+% FIG_PHASE( h5c, times, epsilons, betas, fmf, plotfile )
 %
 % INPUT
 % h5c : data container (scalar object)
@@ -46,7 +46,7 @@ function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
 	end
 
 	logger = xis.hLogger.instance();
-	logger.tab( 'plot raw (''%s'')...', plotfile );
+	logger.tab( 'plot phase (''%s'')...', plotfile );
 
 	style = xis.hStyle.instance();
 
@@ -56,58 +56,39 @@ function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
 	[betas, ibetas] = enosc.parsnap( h5c.betas, betas );
 
 		% read data
-	starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
-	counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
-	x = double( h5read( h5c.filename, '/raw/x', fliplr( starts ), fliplr( counts ) ) );
+	starts = [itimes(1), 2, iepsilons(1), ibetas(1), 1];
+	counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.ensemble];
+	x = squeeze( double( h5read( h5c.filename, '/polar/x', fliplr( starts ), fliplr( counts ) ) ) );
 
 	if fmf
-		starts = [itimes(1), 1, iepsilons(1), ibetas(1), 1];
-		counts = [numel( itimes ), h5c.dim, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
-		mx = double( h5read( h5c.filename, '/raw/mx', fliplr( starts ), fliplr( counts ) ) );
+		starts = [itimes(1), 2, iepsilons(1), ibetas(1), 1];
+		counts = [numel( itimes ), 1, numel( iepsilons ), numel( ibetas ), h5c.meanfield];
+		mf = squeeze( double( h5read( h5c.filename, '/polar/mf', fliplr( starts ), fliplr( counts ) ) ) );
 	end
 
-	x = squeeze( x );
+	x = unwrap( x ); % unwrap phase
 	if fmf
-		mx = squeeze( mx );
+		mf = unwrap( mf );
 	end
 
 		% plot
 	fig = style.figure( ...
-		'PaperPosition', enosc.tile( 4, 4 ), ...
-		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', 'defaultAxesZGrid', 'on', ...
+		'PaperPosition', enosc.tile( 6, 2 ), ...
+		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on', ...
 		'defaultAxesNextPlot', 'add' ...
 		);
 
-	title( sprintf( 'trajectory (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+	title( sprintf( 'phase (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
-	switch h5c.dim
-		case 2 % two-dimensional
-			xlabel( 'x' );
-			ylabel( 'y' );
+	xlabel( 'time' );
+	ylabel( 'phase in 2pi' );
 
-			plot( x(1, :), x(2, :), ...
-				'Color', style.color( 'cold', 0 ) );
-			if fmf
-				plot( mx(1, :), mx(2, :), ...
-					'Color', style.color( 'warm', 0 ) );
-			end
+	xlim( [0, times(end)-times(1)] );
 
-		case 3 % three-dimensional
-			view( 30, 35 );
+	plot( times-times(1), x / (2*pi), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 
-			xlabel( 'x' );
-			ylabel( 'y' );
-			zlabel( 'z' );
-
-			plot3( x(1, :), x(2, :), x(3, :), ...
-				'Color', style.color( 'cold', 0 ) );
-			if fmf
-				plot3( mx(1, :), mx(2, :), mx(3, :), ...
-					'Color', style.color( 'warm', 0 ) );
-			end
-
-		otherwise
-			error( 'invalid value: dim' );
+	if fmf
+		plot( times-times(1), mf / (2*pi), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'oscillator' );
 	end
 
 		% done

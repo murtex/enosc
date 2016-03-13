@@ -13,7 +13,8 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 % OUTPUTS
 % ppos : 'PaperPosition' property
 
-	INVSCALE = 0.7;
+	INVSCALE = 0.75;
+	SCALE = 0.75;
 
 		% safeguard
 	if nargin < 1 || ~isscalar( ncols ) || ~isnumeric( ncols )
@@ -25,21 +26,21 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 	end
 
 	if nargin < 3
-		tilex = 59 / INVSCALE * 0.83;
+		tilex = 59;
 	end
 	if ~isscalar( tilex ) || ~isnumeric( tilex )
 		error( 'invalid argument: tilex' );
 	end
 
 	if nargin < 4
-		tiley = 59 / INVSCALE * 0.83;
+		tiley = 59;
 	end
 	if ~isscalar( tiley ) || ~isnumeric( tiley )
 		error( 'invalid argument: tiley' );
 	end
 
 	if nargin < 5
-		tilesep = 11 / INVSCALE * 0.83;
+		tilesep = 11;
 	end
 	if ~isscalar( tilesep ) || ~isnumeric( tilesep )
 		error( 'invalid argument: tilesep' );
@@ -48,8 +49,8 @@ function ppos = tile( ncols, nrows, tilex, tiley, tilesep )
 		% set tile size
 	ppos(1) = 0;
 	ppos(2) = 0;
-	ppos(3) = ncols * tilex + (ncols-1) * tilesep;
-	ppos(4) = nrows * tiley + (nrows-1) * tilesep;
+	ppos(3) = (ncols * tilex + (ncols-1) * tilesep) / INVSCALE * SCALE;
+	ppos(4) = (nrows * tiley + (nrows-1) * tilesep) / INVSCALE * SCALE;
 
 end
 
