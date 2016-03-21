@@ -93,7 +93,7 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 		set( h, 'Color', style.color( 'warm', +2 ) );
 	end
 
-	title( sprintf( 'trajectory (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+	title( sprintf( 'trajectory (epsilon: %s, beta/pi: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
 	subplot( 2, 2, 2, ... % amplitude
 		'NextPlot', 'add' );

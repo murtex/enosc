@@ -93,7 +93,7 @@ function fig_soq( h5c, times, epsilons, betas, plotfile, mask )
 		);
 
 	subplot( 2, 1, 1 ); % amplitude
-	title( sprintf( 'SOQ (beta: %s)', enosc.par2str( betas ) ) );
+	title( sprintf( 'SOQ (beta/pi: %s)', enosc.par2str( betas ) ) );
 
 	xlabel( 'epsilon' );
 	ylabel( 'amplitude' );

@@ -85,7 +85,7 @@ function plot_map3( data, epsilons, betas, cval )
 
 		% plot data
 	xlabel( 'epsilon' );
-	ylabel( 'beta' );
+	ylabel( 'beta in pi' );
 
 	xlim( [min( epsilons ), max( epsilons )] );
 	ylim( [min( betas ), max( betas )] );

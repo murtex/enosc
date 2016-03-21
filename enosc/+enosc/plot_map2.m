@@ -65,7 +65,7 @@ function plot_map2( data, epsilons, betas )
 
 		% plot data
 	xlabel( 'epsilon' );
-	ylabel( 'beta' );
+	ylabel( 'beta in pi' );
 
 	xlim( [min( epsilons ), max( epsilons )] );
 	ylim( [min( betas ), max( betas )] );

@@ -83,7 +83,7 @@ function fig_acorr( h5c, times, epsilons, betas, plotfile )
 	%semilogx( aorder, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'order parameter' );
 	semilogx( adxdt, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 
-	title( sprintf( 'frequency autocorrelation (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+	title( sprintf( 'frequency autocorrelation (epsilon: %s, beta/pi: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
 	xlabel( 'time lag' );
 	ylabel( 'autocorrelation' );

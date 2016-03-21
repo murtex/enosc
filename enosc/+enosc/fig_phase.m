@@ -85,7 +85,7 @@ function fig_phase( h5c, times, epsilons, betas, fmf, plotfile )
 		'defaultAxesNextPlot', 'add' ...
 		);
 
-	title( sprintf( 'phase (epsilon: %s, beta: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
+	title( sprintf( 'phase (epsilon: %s, beta/pi: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
 	xlabel( 'time' );
 	ylabel( 'phase in 2pi' );
