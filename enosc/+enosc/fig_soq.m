@@ -103,7 +103,7 @@ function fig_soq( h5c, times, epsilons, betas, plotfile, mask )
 	plot( epsilons, mx, 'Color', style.color( 'cold', 0 ), 'LineStyle', '-.' );
 	plot( epsilons, mmx, 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
 	plot( epsilons, mf, 'Color', style.color( 'warm', 0 ), 'LineStyle', '-.' );
-	plot( epsilons, mmf, 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. meanfield' );
+	plot( epsilons, mmf, 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. mean field' );
 
 	set( gca(), 'YLim', [0, get( gca(), 'YLim') * [0; 1]]);
 
@@ -117,7 +117,7 @@ function fig_soq( h5c, times, epsilons, betas, plotfile, mask )
 	plot( epsilons, dmxdt, 'Color', style.color( 'cold', 0 ), 'LineStyle', '--' );
 	plot( epsilons, mdmxdt, 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
 	plot( epsilons, dmfdt, 'Color', style.color( 'warm', 0 ), 'LineStyle', '--' );
-	plot( epsilons, mdmfdt, 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. meanfield' );
+	plot( epsilons, mdmfdt, 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. mean field' );
 
 		% done
 	style.print( plotfile );

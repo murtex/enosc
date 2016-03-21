@@ -95,7 +95,7 @@ function fig_detune( h5c, times, epsilons, betas, plotfile, mask )
 	enosc.plot_map2( dmxdt, epsilons, betas );
 	
 	subplot( 2, 2, 4 );
-	title( 'meanfield frequency' );
+	title( 'mean field frequency' );
 	enosc.plot_map2( dmfdt, epsilons, betas );
 
 		% done

@@ -8,7 +8,7 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 % times : stepping time range (row numeric)
 % epsilons : epsilon coupling range (row numeric)
 % betas : beta coupling range (row numeric)
-% fmf : meanfield flag (scalar logical)
+% fmf : mean field flag (scalar logical)
 % plotfile : plot filename (row char)
 
 		% safeguard
@@ -105,11 +105,11 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 
 	plot( times-times(1), x(1, :), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 	if fmf
-		plot( times-times(1), mf(1, :), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'meanfield' );
+		plot( times-times(1), mf(1, :), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'mean field' );
 	end
 	plot( times-times(1), mx(1, :), 'Color', style.color( 'cold', +2 ), 'DisplayName', 'ensemble' );
 	if fmf
-		plot( xlim(), mean( mf(1, :) ) * [1, 1], 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. meanfield' );
+		plot( xlim(), mean( mf(1, :) ) * [1, 1], 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. mean field' );
 	end
 	plot( xlim(), mean( mx(1, :) ) * [1, 1], 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
 
@@ -125,11 +125,11 @@ function fig_polar( h5c, times, epsilons, betas, fmf, plotfile )
 
 	plot( times-times(1), dxdt(2, :), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 	if fmf
-		plot( times-times(1), dmfdt(2, :), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'meanfield' );
+		plot( times-times(1), dmfdt(2, :), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'mean field' );
 	end
 	plot( times-times(1), dmxdt(2, :), 'Color', style.color( 'cold', +2 ), 'DisplayName', 'ensemble' );
 	if fmf
-		plot( xlim(), mean( dmfdt(2, :) ) * [1, 1], 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. meanfield' );
+		plot( xlim(), mean( dmfdt(2, :) ) * [1, 1], 'Color', style.color( 'warm', 0 ), 'DisplayName', 'avg. mean field' );
 	end
 	plot( xlim(), mean( dmxdt(2, :) ) * [1, 1], 'Color', style.color( 'cold', 0 ), 'DisplayName', 'avg. ensemble' );
 

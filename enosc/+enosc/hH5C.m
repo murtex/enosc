@@ -25,7 +25,7 @@ classdef hH5C < handle
 
 		oscillator = false; % oscillator flag (scalar logical)
 		ensemble = false; % ensemble mean flag (scalar logical)
-		meanfield = false; % meanfield flag (scalar logical)
+		meanfield = false; % mean field flag (scalar logical)
 
 	end
 
@@ -268,7 +268,7 @@ classdef hH5C < handle
 				end
 			end
 
-			if this.polar_track % meanfield
+			if this.polar_track % mean field
 				info = h5info( filename, '/polar/mf' );
 				this.meanfield = true;
 			else

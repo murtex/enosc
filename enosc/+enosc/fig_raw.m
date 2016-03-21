@@ -8,7 +8,7 @@ function fig_raw( h5c, times, epsilons, betas, fmf, plotfile )
 % times : stepping time range (row numeric)
 % epsilons : epsilon coupling range (row numeric)
 % betas : beta coupling range (row numeric)
-% fmf : meanfield flag (scalar logical)
+% fmf : mean field flag (scalar logical)
 % plotfile : plot filename (row char)
 
 		% safeguard

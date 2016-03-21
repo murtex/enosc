@@ -92,7 +92,7 @@ function fig_funnel( h5c, times, epsilons, betas, plotfile, mask )
 	enosc.plot_map2( mx, epsilons, betas );
 	
 	subplot( 2, 2, 4 );
-	title( 'meanfield funnel' );
+	title( 'mean field funnel' );
 	enosc.plot_map2( mf, epsilons, betas );
 
 		% done
