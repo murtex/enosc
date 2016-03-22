@@ -78,10 +78,9 @@ function plot_map3( data, epsilons, betas, cval )
 	data = arrayfun( @rescale, data );
 
 		% prepare colorbar
-	plot( linspace( cval-datahw, cval+datahw, ncols ) ); % let matlab choose optimal ticks and labels, TODO: exponential scale factor!
-
-	ticks = get( gca(), 'YTick' );
-	ticklabels = get( gca(), 'YTickLabel' );
+	%plot( linspace( cval-datahw, cval+datahw, ncols ) ); % let matlab choose optimal ticks and labels, TODO: exponential scale factor!
+	%ticks = get( gca(), 'YTick' );
+	%ticklabels = get( gca(), 'YTickLabel' );
 
 		% plot data
 	xlabel( 'epsilon' );
@@ -97,8 +96,10 @@ function plot_map3( data, epsilons, betas, cval )
 
 	ylim( hc, [nprevcols+1, nprevcols+ncols] );
 
-	set( hc, 'YTick', nprevcols + 1 + (ticks-cval+datahw) / (2*datahw) * (ncols-1) );
-	set( hc, 'YTickLabel', ticklabels );
+	set( hc, 'YTick', nprevcols + 1 + (0-cval+datahw) / (2*datahw) * (ncols-1) );
+	set( hc, 'YTickLabel', {'0'} );
+	%set( hc, 'YTick', nprevcols + 1 + (ticks-cval+datahw) / (2*datahw) * (ncols-1) );
+	%set( hc, 'YTickLabel', {} );
 
 	enosc.cbadjust( gca(), hc );
 
