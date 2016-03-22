@@ -95,7 +95,7 @@ function fig_phase( h5c, times, epsilons, betas, fmf, plotfile )
 	plot( times-times(1), x / (2*pi), 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
 
 	if fmf
-		plot( times-times(1), mf / (2*pi), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'oscillator' );
+		plot( times-times(1), mf / (2*pi), 'Color', style.color( 'warm', +2 ), 'DisplayName', 'mean field' );
 	end
 
 		% done
