@@ -78,10 +78,10 @@ function fig_acorr( h5c, times, epsilons, betas, plotfile )
 		'defaultAxesXGrid', 'on', 'defaultAxesYGrid', 'on' ...
 		);
 
-	semilogx( awn, 'Color', style.color( 'neutral', 0 ), 'DisplayName', 'white noise' );
-	hold on
-	%semilogx( aorder, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'order parameter' );
 	semilogx( adxdt, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'oscillator' );
+	hold on
+	semilogx( awn, 'Color', style.color( 'neutral', 0 ), 'DisplayName', 'white noise' );
+	%semilogx( aorder, 'Color', style.color( 'neutral', +2 ), 'DisplayName', 'order parameter' );
 
 	title( sprintf( 'frequency autocorrelation (epsilon: %s, beta/pi: %s)', enosc.par2str( epsilons ), enosc.par2str( betas ) ) );
 
